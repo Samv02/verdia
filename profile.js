@@ -22,9 +22,22 @@ const auth = getAuth();
 //         return "";
 //     }
 // }
-console.log(auth.currentUser);
+// console.log(auth.currentUser);
 //console.log(firebase.auth().currentUser);
-console.log(window.currentUser);
+
+//verifie que l'utilisateur est connecté
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        // L'utilisateur est connecté
+        console.log("Utilisateur connecté :", user);
+        console.log("UID:", user.uid);
+        console.log("Nom:", user.displayName);
+        console.log("Email:", user.email);
+        document.getElementById("username").value = user.displayName;
+        document.getElementById("mail").value = user.email;
+    }
+});
+
 if (auth.currentUser) {
     document.getElementById("username").textContent = auth.currentUser.email;
     document.getElementById("firstname").textContent =
