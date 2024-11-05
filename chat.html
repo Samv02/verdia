@@ -5,61 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat Firebase</title>
   <link rel="stylesheet" href="styles.css">
-  <style>body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  .container {
-    display: flex;
-    width: 80%;
-  }
-  
-  .chat-list {
-    width: 30%;
-    border-right: 1px solid #ccc;
-    padding: 10px;
-  }
-  
-  .chat-list h2 {
-    text-align: center;
-  }
-  
-  .chat-window {
-    width: 70%;
-    padding: 10px;
-  }
-  
-  #messages {
-    height: 400px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-  }
-  
-  .sent {
-    text-align: right;
-    color: blue;
-  }
-  
-  .received {
-    text-align: left;
-    color: green;
-  }
-  
-  #messageInput {
-    width: 80%;
-    padding: 5px;
-    margin-right: 5px;
-  }
-  
-  #sendMessage {
-    padding: 5px;
-  }</style>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    
+    .container {
+      display: flex;
+      width: 80%;
+    }
+    
+    .chat-list {
+      width: 30%;
+      border-right: 1px solid #ccc;
+      padding: 10px;
+    }
+    
+    .chat-list h2 {
+      text-align: center;
+    }
+    
+    .chat-window {
+      width: 70%;
+      padding: 10px;
+    }
+    
+    #messages {
+      height: 400px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    
+    .sent {
+      text-align: right;
+      color: blue;
+    }
+    
+    .received {
+      text-align: left;
+      color: green;
+    }
+    
+    #messageInput {
+      width: 80%;
+      padding: 5px;
+      margin-right: 5px;
+    }
+    
+    #sendMessage {
+      padding: 5px;
+    }
+    
+    .selected {
+      background-color: #f0f0f0;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
+  <div class="container">
     <div class="chat-list" id="chatList">
       <h2>Mes Conversations</h2>
       <ul id="conversations"></ul>
@@ -100,13 +106,15 @@
     const auth = getAuth();
   
     let currentUser;
+    let selectedChatId = null;
   
+
     onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
         loadConversations();
       } else {
-        signInAnonymously(auth).catch(console.error);
+        console.log("l'user n'est pas connecté");
       }
     });
   
@@ -114,24 +122,36 @@
       const chatList = document.getElementById("conversations");
       chatList.innerHTML = "";
   
+      console.log(currentUser.uid);
       const q = query(collection(db, "chat"), where("users", "array-contains", currentUser.uid));
       const querySnapshot = await getDocs(q);
   
-      if (querySnapshot.empty) {
-        document.getElementById("newConversationButton").style.display = "block";
-      } else {
-        document.getElementById("newConversationButton").style.display = "none";
-        querySnapshot.forEach((doc) => {
-          const chatData = doc.data();
-          const chatId = doc.id;
-          const conversation = document.createElement("li");
-          conversation.innerText = `Conversation ${chatId}`;
-          conversation.onclick = () => loadMessages(chatId);
-          chatList.appendChild(conversation);
-        });
-      }
+      querySnapshot.forEach((doc) => {
+        const chatData = doc.data();
+        const chatId = doc.id;
+        const conversation = document.createElement("li");
+        conversation.id = chatId;
+        conversation.innerText = `Conversation ${chatId}`;
+        conversation.onclick = () => {
+          selectConversation(chatId);
+          loadMessages(chatId);
+        };
+        chatList.appendChild(conversation);
+      });
     }
   
+
+
+    function selectConversation(chatId) {
+      selectedChatId = chatId;
+      const conversations = document.querySelectorAll("#conversations li");
+      conversations.forEach((li) => li.classList.remove("selected"));
+      document.getElementById(chatId).classList.add("selected");
+    }
+  
+    
+    
+    //fonction de chargement des data donc des messages de la conversation 
     function loadMessages(chatId) {
       const messagesDiv = document.getElementById("messages");
       messagesDiv.innerHTML = "";
@@ -149,13 +169,13 @@
       });
     }
   
+  
     document.getElementById("sendMessage").onclick = async () => {
       const messageInput = document.getElementById("messageInput");
       const messageContent = messageInput.value;
-      const selectedChat = document.querySelector("#conversations li.selected")?.id;
   
-      if (messageContent && selectedChat) {
-        await addDoc(collection(db, "chat", selectedChat, "messages"), {
+      if (messageContent && selectedChatId) {
+        await addDoc(collection(db, "chat", selectedChatId, "messages"), {
           senderUid: currentUser.uid,
           content: messageContent,
           timestamp: Date.now()
@@ -178,12 +198,14 @@
         existingConversation.forEach((doc) => {
           if (doc.data().users.includes(newUserId)) {
             conversationExists = true;
+            selectConversation(doc.id);
             loadMessages(doc.id);
           }
         });
   
         if (!conversationExists) {
           const newChatRef = await addDoc(collection(db, "chat"), { users: [currentUser.uid, newUserId] });
+          selectConversation(newChatRef.id);
           loadMessages(newChatRef.id);
         }
   
@@ -192,6 +214,5 @@
       }
     };
   </script>
-  
-  </body>
-  </html>
+</body>
+</html>
