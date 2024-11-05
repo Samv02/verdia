@@ -70,7 +70,11 @@ button.ghost {
 	border-color: #FFFFFF;
 }
 
-form {
+.btn-google {
+	background-color: #FFFFFF;
+}
+
+.form {
 	background-color: #FFFFFF;
 	display: flex;
 	align-items: center;
@@ -291,8 +295,17 @@ input.btnlogin:hover{
 	color: #369b31;
 	transition: 0.6s;
 }
+
 img.imgGoogle {
     width: 70px;
+	cursor: pointer;
+	transition: transform 0.2;
+}
+.img.imgGoogle:hover {
+	transform: scale(1.05);
+}
+.img.imgGoogle:active {
+	transform: scale(0.95);
 }
 
 img.imglogoLogin {
