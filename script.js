@@ -25,6 +25,7 @@ import {
     orderBy,
     onSnapshot,
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { createUserDocument } from "./db/user.js";
 
 export const firebaseConfig = {
     apiKey: "AIzaSyBSH-hvCVkKhhMrdtfnoqSZ0TZzjmPMulo",
@@ -85,12 +86,26 @@ window.logout = logout; // Rendre la fonction accessible globalement
 const path = window.location.pathname;
 const htmlNamePage = path.split("/").pop();
 
+//Creation du document utilisateur
+export function AddUserToDatabase(user) {
+    const objectUser = {
+        id: user.uid,
+        nom: user.displayName,
+        prenom: "",
+        username: "",
+        mail: user.email,
+    };
+    createUserDocument(objectUser);
+}
+
 //Suivi de l'état d'authentification
 if (htmlNamePage == "auth-page.html") {
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById("login").classList.remove("active");
             document.getElementById("chat").classList.add("active");
+            //Si user est connecté, création du document utilisateur
+            AddUserToDatabase(user);
         } else {
             document.getElementById("login").classList.add("active");
             document.getElementById("chat").classList.remove("active");
