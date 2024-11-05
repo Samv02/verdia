@@ -81,13 +81,19 @@ async function logout() {
 }
 window.logout = logout; // Rendre la fonction accessible globalement
 
+//Récuperation de la page html courante
+const path = window.location.pathname;
+const htmlNamePage = path.split("/").pop();
+
 //Suivi de l'état d'authentification
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        document.getElementById("login").classList.remove("active");
-        document.getElementById("chat").classList.add("active");
-    } else {
-        document.getElementById("login").classList.add("active");
-        document.getElementById("chat").classList.remove("active");
-    }
-});
+if (htmlNamePage == "auth-page.html") {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById("login").classList.remove("active");
+            document.getElementById("chat").classList.add("active");
+        } else {
+            document.getElementById("login").classList.add("active");
+            document.getElementById("chat").classList.remove("active");
+        }
+    });
+}
