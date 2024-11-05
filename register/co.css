@@ -298,3 +298,50 @@ img.imgGoogle {
 img.imglogoLogin {
     max-width: 500px;
 }
+
+
+
+@media screen and (max-width:1030px)  {
+	.overlay-container {
+		display: none;
+	}
+
+	.sign-in-container {
+		left: 0;
+		width: 100%;
+		z-index: 2;
+	}
+
+	.sign-up-container {
+		left: 0;
+		width: 100%;
+		opacity: 0;
+		z-index: 1;
+	}
+
+	.back2 {
+		/* position: absolute; */
+		/* z-index: 99; */
+		/* top: 2%; */
+		/* right: 2%; */
+		display: none;
+	}
+
+}
+
+@media screen and (max-width:600px)  {
+.Allformlogin {
+	background: white;
+	border: 2px solid black;
+	border-radius: 50px;
+	padding: 50px;
+	display: flex;
+	width: 400px;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	align-content: center;
+	justify-content: center;
+	align-items: center;
+	row-gap: 20px;
+}
+}
