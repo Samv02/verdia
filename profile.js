@@ -3,6 +3,8 @@ import {
     getAuth,
     onAuthStateChanged,
     signOut,
+    updateEmail,
+    updatePassword,
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
     getFirestore,
@@ -13,6 +15,7 @@ import {
     onSnapshot,
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { app } from "./script.js";
+import { updateUserDocument, getUserDocument } from "./db/user.js";
 
 const auth = getAuth();
 // function getUserMail() {
@@ -28,21 +31,164 @@ const auth = getAuth();
 //verifie que l'utilisateur est connecté
 auth.onAuthStateChanged((user) => {
     if (user) {
-        // L'utilisateur est connecté
-        console.log("Utilisateur connecté :", user);
-        console.log("UID:", user.uid);
-        console.log("Nom:", user.displayName);
-        console.log("Email:", user.email);
-        document.getElementById("username").value = user.displayName;
-        document.getElementById("mail").value = user.email;
+        fetchDataInput(user);
     }
 });
 
-if (auth.currentUser) {
-    document.getElementById("username").textContent = auth.currentUser.email;
-    document.getElementById("firstname").textContent =
-        auth.currentUser.displayName;
-    document.getElementById("lastname").textContent =
-        auth.currentUser.displayName;
-    console.log(auth.currentUser);
+async function fetchDataInput(user) {
+    // L'utilisateur est connecté, récupération des informations en base de données
+    const userData = await getUserDocument(user.uid);
+    //Affectation des infos aux inputs
+    if (userData) {
+        document.getElementById("username").value = userData.username;
+        document.getElementById("lastname").value = userData.nom;
+        document.getElementById("firstname").value = userData.prenom;
+    }
+    //document.getElementById("mail").value = user.email;
+    document.getElementById("userId").value = user.uid;
+    console.log(user.photoURL);
+    console.log(user);
+}
+//Event listener pour update les infos
+document
+    .getElementById("buttonUpdateInfos")
+    .addEventListener("click", updateUserInfos);
+//Event listener pour update le mail
+// document
+//     .getElementById("buttonUpdateMail")
+//     .addEventListener("click", updateMail);
+//Event listener pour update le pwd
+document
+    .getElementById("buttonUpdatePassword")
+    .addEventListener("click", updatePwd);
+
+function updatePwd() {
+    //Check si les deux champs sont pas vides et identiques
+    const pwd = document.getElementById("password").value;
+    const confirmPwd = document.getElementById("confirmPassword").value;
+    if (pwd == "" || confirmPwd == "") {
+        Swal.fire({
+            title: "Attention, un champ est vide.",
+            icon: "error",
+        });
+        return;
+    }
+    console.log(pwd + confirmPwd);
+    if (pwd != confirmPwd) {
+        Swal.fire({
+            title: "Les deux mots de passe sont différents.",
+            icon: "error",
+        });
+        return;
+    }
+    updateUserPassword(pwd.value);
+}
+
+export function updateUserInfos() {
+    const username = document.getElementById("username").value;
+    const firstname = document.getElementById("firstname").value;
+    const lastname = document.getElementById("lastname").value;
+    const userId = document.getElementById("userId").value;
+
+    if (username == "" || firstname == "" || lastname == "") {
+        Swal.fire({
+            title: "Attention, un champ est vide.",
+            icon: "error",
+        });
+        return;
+    }
+    const updatedFields = {
+        username: username,
+        prenom: firstname,
+        nom: lastname,
+    };
+    const booleanReturn = updateUserDocument(userId, updatedFields);
+    if (booleanReturn) {
+        document.getElementById("messageInfosDiv").innerHTML =
+            "<p>Informations mises à jour avec succès.</p>";
+    }
+}
+
+// function updateMail() {
+//     const mail = document.getElementById("mail").value;
+//     const userId = document.getElementById("userId").value;
+
+//     if (mail == "") {
+//         Swal.fire({
+//             title: "Attention, le champ mail est vide.",
+//             icon: "error",
+//         });
+//         return;
+//     }
+//     const updatedFields = {
+//         mail: mail,
+//     };
+//     updateUserDocument(userId, updatedFields);
+
+//     //Update le mail via firebase
+//     //updateUserEmail(mail);
+// }
+
+// Fonction pour mettre à jour l'email de l'utilisateur
+// async function updateUserEmail(newEmail) {
+//     const auth = getAuth();
+//     const user = auth.currentUser;
+
+//     if (user) {
+//         try {
+//             await updateEmail(user, newEmail);
+//             console.log("Email mis à jour avec succès !");
+//         } catch (error) {
+//             if (error.code === "auth/requires-recent-login") {
+//                 console.error(
+//                     "L'utilisateur doit se reconnecter pour mettre à jour son email."
+//                 );
+//                 // Deconnexion de l'utilisateur et redirection vers la page de connexion
+//                 await signOut(auth);
+
+//                 // Redirige vers la page de connexion
+//                 window.location.href = "auth-page.html";
+//             } else {
+//                 console.error(
+//                     "Erreur lors de la mise à jour de l'email :",
+//                     error
+//                 );
+//             }
+//         }
+//     } else {
+//         console.error("Aucun utilisateur connecté.");
+//     }
+// }
+
+// Fonction pour mettre à jour le mot de passe de l'utilisateur
+async function updateUserPassword(newPassword) {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+        try {
+            await updatePassword(user, newPassword);
+            console.log("Mot de passe mis à jour avec succès !");
+            document.getElementById("messagePwdDiv").innerHTML =
+                "<p>Mot de passe mis à jour avec succès.</p>";
+        } catch (error) {
+            if (error.code === "auth/requires-recent-login") {
+                console.error(
+                    "L'utilisateur doit se reconnecter pour mettre à jour son mot de passe."
+                );
+
+                // Déconnecter l'utilisateur
+                await signOut(auth);
+                // Rediriger vers la page de connexion
+                window.location.href = "auth-page.html";
+            } else {
+                console.error(
+                    "Erreur lors de la mise à jour du mot de passe :",
+                    error
+                );
+            }
+        }
+    } else {
+        console.error("Aucun utilisateur connecté.");
+    }
 }
