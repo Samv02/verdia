@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Chat en Temps Réel</title>
+        <style>
+            #chat {
+                max-width: 500px;
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            #messages {
+                max-height: 300px;
+                overflow-y: auto;
+                margin-bottom: 10px;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            #messageInput {
+                width: 80%;
+                padding: 8px;
+                margin-right: 10px;
+            }
+            button {
+                padding: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="chat">
+            <div id="messages"></div>
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="Écris un message..."
+            />
+            <button onclick="sendMessage()">Envoyer</button>
+        </div>
+
+        <!-- Initialisation de Firebase et Firestore -->
+        <script type="module">
+            // Import des fonctions nécessaires depuis les SDK Firebase
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+            import {
+                getFirestore,
+                collection,
+                addDoc,
+                query,
+                orderBy,
+                onSnapshot,
+            } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+            // Configuration de Firebase pour le projet verdia
+            const firebaseConfig = {
+                apiKey: "AIzaSyBSH-hvCVkKhhMrdtfnoqSZ0TZzjmPMulo",
+                authDomain: "verdia-4401d.firebaseapp.com",
+                projectId: "verdia-4401d",
+                storageBucket: "verdia-4401d.firebasestorage.app",
+                messagingSenderId: "639552213584",
+                appId: "1:639552213584:web:b1ede9db70fc1cceb63755",
+                measurementId: "G-YV1L49M89L",
+            };
+
+            // Initialisation de Firebase et Firestore
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const db = getFirestore(app);
+
+            // Fonction pour envoyer un message
+            async function sendMessage() {
+                const messageInput = document.getElementById("messageInput");
+                const message = messageInput.value.trim();
+                if (message) {
+                    try {
+                        await addDoc(collection(db, "messages"), {
+                            content: message,
+                            timestamp: Date.now(),
+                        });
+                        messageInput.value = ""; // Vide le champ après l'envoi
+                    } catch (e) {
+                        console.error(
+                            "Erreur lors de l'envoi du message : ",
+                            e
+                        );
+                    }
+                }
+            }
+            window.sendMessage = sendMessage; // Rend la fonction accessible globalement
+
+            // Fonction pour afficher les messages en temps réel
+            const messagesDiv = document.getElementById("messages");
+
+            const q = query(collection(db, "messages"), orderBy("timestamp"));
+            onSnapshot(q, (snapshot) => {
+                messagesDiv.innerHTML = ""; // Vide l'affichage avant de charger les messages
+                snapshot.forEach((doc) => {
+                    const messageData = doc.data();
+                    const messageElement = document.createElement("div");
+                    messageElement.textContent = messageData.content;
+                    messagesDiv.appendChild(messageElement);
+                });
+            });
+        </script>
+    </body>
+</html>
