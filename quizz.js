@@ -81,7 +81,7 @@ function loadQuestionAndAnswers() {
   getDoc(docRef).then((docSnap) => {
     if (docSnap.exists) {
       const data = docSnap.data();
-      const questionData = data.questions[currentQuestion];
+      const questionData = data.questions[currentQuestion];//toute les question
 
       // Affiche la question dans le h2
       const questionTextElement = document.getElementById("questionText");
