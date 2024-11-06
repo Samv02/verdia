@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", initThemesDiv);
 
 async function initThemesDiv() {
     // Appeler la fonction pour récupérer tous les thèmes
-    const themesTableau = await getAllThemes();
+    //const themesTableau = await getAllThemes();
     const themeTab = await getAllTheme();
     console.log(themeTab);
 
@@ -41,14 +41,6 @@ async function initThemesDiv() {
         const conteneur = document.getElementById("conteneur");
         const div = document.createElement("div");
         div.classList.add(
-            // "flex",
-            // "flex-col",
-            // "border",
-            // "border-black-200",
-            // "rounded-lg",
-            // "p-4",
-            // "m-2",
-            // "hover:bg-green-300"
             "max-w-xs",
             "overflow-hidden",
             "rounded",
@@ -63,8 +55,7 @@ async function initThemesDiv() {
         );
         const img = document.createElement("img");
         img.classList.add("w-full", "object-cover");
-        img.src =
-            "https://images.partir.com/HlZJJUo6PASOAM-F_CMnsdLFQrE=/750x/filters:sharpen(0.3,0.3,true)/lieux-interet/nouvelle-caledonie/nouvelle-caledonie-lifou.jpg";
+        img.src = theme.image;
         img.alt = theme.nom;
         div.appendChild(img);
         const titre = document.createElement("div");
@@ -83,7 +74,7 @@ async function initThemesDiv() {
 
         //Ajout du listener sur la div
         div.addEventListener("click", function () {
-            clickOnTheme(theme);
+            clickOnTheme(theme.nom);
         });
     });
 
@@ -127,6 +118,10 @@ async function clickOnTheme(theme) {
         articleConteneur.appendChild(paragrapheArticle);
         conteneur.appendChild(articleConteneur);
     });
+
+    //Defiler vers la div de l'article
+    const articleConteneur = document.getElementById("conteneur-article");
+    articleConteneur.scrollIntoView({ behavior: "smooth" });
 }
 
 function eraseArticleConteneur() {
@@ -158,17 +153,20 @@ document.getElementById("writeArticle").addEventListener("click", function () {
 
 // Fonction pour afficher la popup
 async function showInputPopup() {
-    const allThemes = await getAllThemes();
+    const allThemes = await getAllTheme();
+    console.log(allThemes);
     const optionDataList = allThemes
-        .map((theme) => `<option value="${theme}"></option>`)
+        .map((theme) => `<option value="${theme.nom}">${theme.nom}</option>`)
         .join("");
 
     const { value: formValues } = await Swal.fire({
         title: "Ajouter un article",
         width: "50%",
         html:
-            `<input id="swal-input-theme" class="swal2-input w-3/4 p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-400" placeholder="Thème" list="data">` +
-            `<datalist id="data">${optionDataList}</datalist>` +
+            // `<input id="swal-input-theme" class="swal2-input w-3/4 p-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-400" placeholder="Thème" list="data">` +
+            // `<datalist id="data">${optionDataList}</datalist>` +
+            `<label for="swal-input-theme">Choisir un thème:</label>` +
+            `<select id="swal-input-theme" class="w-3/4 p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">${optionDataList}</select>` +
             `<input id="swal-input-title" class="swal2-input w-3/4" placeholder="Titre">` +
             `<textarea id="swal-input-content" class="swal2-textarea w-3/4" placeholder="Contenu" rows="4"></textarea>`,
         focusConfirm: false,
