@@ -316,11 +316,6 @@ img.imgGoogle:active {
 	transform: scale(0.95);
 }
 
-#mobileRegister {
-	display: flex;
-	justify-content:space-between;
-}
-
 
 
 @media screen and (max-width:1030px) {
@@ -347,6 +342,24 @@ img.imgGoogle:active {
 		/* top: 2%; */
 		/* right: 2%; */
 		display: none;
+	}
+
+	#signInMobile {
+		cursor: pointer;
+		transition: transform 0.2s;
+	}
+
+	#signInMobile:hover {
+		transform: scale(1.05);
+	}
+	
+	#signInMobile:active {
+		transform: scale(0.95) translate(50%);
+
+	}
+
+	.slideToLeft {
+		transform: translateX(-100%);
 	}
 
 }

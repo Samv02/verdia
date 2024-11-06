@@ -38,7 +38,7 @@
             </div>
          </form>
       </div>
-      <div class="form-container sign-in-container">
+      <div id="signInContainer" class="form-container sign-in-container">
          <form method="post">
             <div class="Allformlogin">
                <h1>Se connecter</h1>
@@ -50,6 +50,10 @@
                <input type="submit" class="btnlogin" name="envoyer" value="Se connecter">
                <a onclick="loginWithGoogle()">
                   <img class="imgGoogle" src="imageSite/google.png" alt="">
+               </a>
+               <a>
+                  S'inscrire
+                  <img id="signInMobile" src="imageSite/icones/right_arrow.png" alt="" onclick="slideToRegister()">
                </a>
             </div>
          </form>
