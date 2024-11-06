@@ -86,9 +86,8 @@
   
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
-    import { getFirestore, collection, addDoc, query, where, getDocs, orderBy, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, where, getDocs, orderBy, onSnapshot, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
   
     const firebaseConfig = {
       apiKey: "AIzaSyBSH-hvCVkKhhMrdtfnoqSZ0TZzjmPMulo",
@@ -96,12 +95,10 @@
       projectId: "verdia-4401d",
       storageBucket: "verdia-4401d.firebasestorage.app",
       messagingSenderId: "639552213584",
-      appId: "1:639552213584:web:b1ede9db70fc1cceb63755",
-      measurementId: "G-YV1L49M89L"
+      appId: "1:639552213584:web:b1ede9db70fc1cceb63755"
     };
   
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
     const db = getFirestore(app);
     const auth = getAuth();
   
@@ -114,33 +111,37 @@
         currentUser = user;
         loadConversations();
       } else {
-        console.log("l'user n'est pas connecté");
+        console.log("L'utilisateur n'est pas connecté");
       }
     });
   
     async function loadConversations() {
       const chatList = document.getElementById("conversations");
       chatList.innerHTML = "";
-  
-      console.log(currentUser.uid);
+
       const q = query(collection(db, "chat"), where("users", "array-contains", currentUser.uid));
       const querySnapshot = await getDocs(q);
-  
-      querySnapshot.forEach((doc) => {
-        const chatData = doc.data();
-        const chatId = doc.id;
+
+      for (const documentSnapshot of querySnapshot.docs) {
+        const chatData = documentSnapshot.data();
+        const chatId = documentSnapshot.id;
+        const otherUserId = chatData.users.find(uid => uid !== currentUser.uid);
+
+        // Récupérer le pseudo de l'autre utilisateur
+        const userDoc = await getDoc(doc(db, "users", otherUserId));
+        const username = userDoc.exists() ? userDoc.data().username : "Inconnu";
+        const lastMessage = chatData.lastMessage || "";
+
         const conversation = document.createElement("li");
         conversation.id = chatId;
-        conversation.innerText = `Conversation ${chatId}`;
+        conversation.innerHTML = `<strong>${username}</strong><br><span>${lastMessage}</span>`;
         conversation.onclick = () => {
           selectConversation(chatId);
           loadMessages(chatId);
         };
         chatList.appendChild(conversation);
-      });
+      }
     }
-  
-
 
     function selectConversation(chatId) {
       selectedChatId = chatId;
@@ -149,10 +150,7 @@
       document.getElementById(chatId).classList.add("selected");
     }
   
-    
-    
-    //fonction de chargement des data donc des messages de la conversation 
-    function loadMessages(chatId) {
+    async function loadMessages(chatId) {
       const messagesDiv = document.getElementById("messages");
       messagesDiv.innerHTML = "";
   
@@ -169,7 +167,6 @@
       });
     }
   
-  
     document.getElementById("sendMessage").onclick = async () => {
       const messageInput = document.getElementById("messageInput");
       const messageContent = messageInput.value;
@@ -180,6 +177,12 @@
           content: messageContent,
           timestamp: Date.now()
         });
+
+        // Mettre à jour le dernier message dans la conversation
+        await updateDoc(doc(db, "chat", selectedChatId), {
+          lastMessage: messageContent
+        });
+
         messageInput.value = "";
       }
     };
@@ -204,7 +207,7 @@
         });
   
         if (!conversationExists) {
-          const newChatRef = await addDoc(collection(db, "chat"), { users: [currentUser.uid, newUserId] });
+          const newChatRef = await addDoc(collection(db, "chat"), { users: [currentUser.uid, newUserId], lastMessage: "" });
           selectConversation(newChatRef.id);
           loadMessages(newChatRef.id);
         }
@@ -215,4 +218,3 @@
     };
   </script>
 </body>
-</html>
