@@ -32,6 +32,7 @@ const auth = getAuth();
 auth.onAuthStateChanged((user) => {
     if (user) {
         fetchDataInput(user);
+        window.userConnected = user;
     }
 });
 
@@ -46,8 +47,6 @@ async function fetchDataInput(user) {
     }
     //document.getElementById("mail").value = user.email;
     document.getElementById("userId").value = user.uid;
-    console.log(user.photoURL);
-    console.log(user);
 }
 //Event listener pour update les infos
 document
@@ -73,7 +72,7 @@ function updatePwd() {
         });
         return;
     }
-    console.log(pwd + confirmPwd);
+
     if (pwd != confirmPwd) {
         Swal.fire({
             title: "Les deux mots de passe sont différents.",
@@ -163,14 +162,31 @@ export function updateUserInfos() {
 // Fonction pour mettre à jour le mot de passe de l'utilisateur
 async function updateUserPassword(newPassword) {
     const auth = getAuth();
-    const user = auth.currentUser;
+    const user = window.userConnected;
 
     if (user) {
         try {
-            await updatePassword(user, newPassword);
-            console.log("Mot de passe mis à jour avec succès !");
-            document.getElementById("messagePwdDiv").innerHTML =
-                "<p>Mot de passe mis à jour avec succès.</p>";
+            //await updatePassword(user, newPassword);
+            updatePassword(user, newPassword).then(() => {
+                console.log("Mot de passe mis à jour avec succès !");
+                document.getElementById("messagePwdDiv").innerHTML =
+                    "<p>Mot de passe mis à jour avec succès.</p>";
+                // Déconnecter l'utilisateur pour rafraîchir la session
+                signOut(auth);
+                alert(
+                    "Votre mot de passe a été mis à jour. Veuillez vous reconnecter."
+                );
+                window.location.href = "auth-page.html";
+            });
+            // console.log("Mot de passe mis à jour avec succès !");
+            // document.getElementById("messagePwdDiv").innerHTML =
+            //     "<p>Mot de passe mis à jour avec succès.</p>";
+            // // Déconnecter l'utilisateur pour rafraîchir la session
+            // await signOut(auth);
+            // alert(
+            //     "Votre mot de passe a été mis à jour. Veuillez vous reconnecter."
+            // );
+            // window.location.href = "auth-page.html";
         } catch (error) {
             if (error.code === "auth/requires-recent-login") {
                 console.error(

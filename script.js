@@ -46,9 +46,12 @@ async function loginWithEmail() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     try {
+        console.log(auth + " " + email + " " + password);
         await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
         console.error("Erreur de connexion : ", error.message);
+        document.getElementById("connectionMessage").innerHTML =
+            "<p>Erreur de connexion</p>";
     }
 }
 window.loginWithEmail = loginWithEmail; // Rendre la fonction accessible globalement
