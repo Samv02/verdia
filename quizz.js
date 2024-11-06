@@ -30,8 +30,85 @@ let currentQuestion = 0;
 let timeLeft = 1000;
 let score = 0;
 let timerInterval;
+let quizzTheme = null;
 
-document.getElementById("score").style.display = "none";
+async function getAllTextFields() {
+  const quizzCollection = collection(db, "quizz");
+  const container = document.getElementById("buttonContainer");
+  
+  try {
+    const querySnapshot = await getDocs(quizzCollection);
+    
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const docId = doc.id;
+
+      if (data.quizz) {
+        const button = document.createElement("button");
+        button.innerText = data.quizz;
+
+        // Ajouter un événement onclick pour afficher l'ID du document dans la console
+        button.onclick = () => {
+          fetchQuizId(docId,data.quizz);
+        };
+        
+        // Ajouter le bouton au container
+        container.appendChild(button);
+      }
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des champs text :", error);
+  }
+}
+
+async function fetchQuizId(quizzValue, text) {
+  console.log(`fetchQuizId appelée avec l'ID : ${quizzValue}`);
+  quizzTheme = quizzValue;
+  document.getElementById("texteTheme").textContent = text;
+  document.getElementById("startQuizz").style.display = "block";
+  document.getElementById("theme").style.display = "none";
+
+}
+window.fetchQuizId = fetchQuizId;
+
+function loadQuestionAndAnswers() {
+  document.getElementById("startQuizz").style.display = "none";
+  document.getElementById("quizz").style.display = "block";
+  timeLeft = 1000;
+
+  const docRef = doc(db, "quizz", quizzTheme);
+
+  getDoc(docRef).then((docSnap) => {
+    if (docSnap.exists) {
+      const data = docSnap.data();
+      const questionData = data.questions[currentQuestion];
+
+      // Affiche la question dans le h2
+      const questionTextElement = document.getElementById("questionText");
+      questionTextElement.textContent = questionData.text;
+
+      // Récupère le conteneur de réponses
+      const answersContainer = document.getElementById("answersContainer");
+
+      // Efface les réponses précédentes si nécessaire
+      answersContainer.innerHTML = "";
+
+      // Parcourt les réponses et crée un bouton pour chaque réponse
+      questionData.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option.text;
+        button.onclick = () => handleAnswerClick(option.istrue, index);
+        answersContainer.appendChild(button);
+      });
+      startTimer();
+    } else {
+      console.log("Le document n'existe pas !");
+    }
+  }).catch((error) => {
+    console.error("Erreur lors de la récupération du document:", error);
+  });
+}
+window.loadQuestionAndAnswers = loadQuestionAndAnswers;
 
 
 async function startTimer() {
@@ -69,73 +146,15 @@ async function updateTimer() {
     }
 }
 
-async function fetchQuizId(quizzValue) {
-    const quizzCollection = collection(db, "quizz");
-    const q = query(quizzCollection, where("quizz", "==", quizzValue));
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-        const doc = querySnapshot.docs[0];
-        const quizId = doc.id; // ID du document correspondant
-
-        document.getElementById("quizIdDisplay").textContent = `ID du quizz : ${quizId}`;
-        loadQuestionAndAnswers(quizId); // Charger la question avec cet ID
-    } else {
-        console.log("Aucun document trouvé pour cette valeur.");
-    }
-}
-window.fetchQuizId = fetchQuizId;
-
-function loadQuestionAndAnswers() {
-    document.getElementById("startQuizButton").style.display = "none";
-    document.getElementById("score").style.display = "block";
-    timeLeft = 1000;
-
-    const docRef = doc(db, "quizz", "41bUUuvo7avqvFcESbA7");
-
-    getDoc(docRef).then((docSnap) => {
-      if (docSnap.exists) {
-        const data = docSnap.data();
-        const questionData = data.questions[currentQuestion];
-
-        // Affiche la question dans le h2
-        const questionTextElement = document.getElementById("questionText");
-        questionTextElement.textContent = questionData.text;
-
-        // Récupère le conteneur de réponses
-        const answersContainer = document.getElementById("answersContainer");
-
-        // Efface les réponses précédentes si nécessaire
-        answersContainer.innerHTML = "";
-
-        // Parcourt les réponses et crée un bouton pour chaque réponse
-        questionData.options.forEach((option, index) => {
-          const button = document.createElement("button");
-          button.textContent = option.text;
-          button.onclick = () => handleAnswerClick(option.istrue, index);
-          answersContainer.appendChild(button);
-        });
-        startTimer();
-      } else {
-        console.log("Le document n'existe pas !");
-      }
-    }).catch((error) => {
-      console.error("Erreur lors de la récupération du document:", error);
-    });
-}
-window.loadQuestionAndAnswers = loadQuestionAndAnswers;
-
-
-
 // Fonction pour gérer le clic sur une réponse
-function handleAnswerClick(isTrue, index) {
+async function handleAnswerClick(isTrue, index) {
     const currentTimerValue = document.getElementById("timer").textContent;
     alert(`Timer arrêté : ${currentTimerValue}`); // Afficher la valeur du timer
     document.querySelectorAll("button").forEach((button) => {
         button.disabled = true;
     });
     if (isTrue) {
-        const score = Number(document.getElementById("score").textContent) + Math.round(currentTimerValue * 100);
+        score += Math.round(currentTimerValue * 100);
         document.getElementById("score").textContent = score;
         alert(`Bonne réponse !`);
     } else {
@@ -143,62 +162,4 @@ function handleAnswerClick(isTrue, index) {
     }
 }
 
-/*async function getQuizIdByFieldValue(quizzValue) {
-    const quizzCollectionRef = collection(db, "quizz"); // Référence à la collection "quizz"
-    const q = query(quizzCollectionRef, where("quizz", "==", quizzValue)); // Crée une requête
-
-    try {
-        const querySnapshot = await getDocs(q);
-        
-        // Parcourir les documents qui correspondent à la requête
-        querySnapshot.forEach((doc) => {
-            console.log("ID du document :", doc.id); // Affiche l'ID du document
-        });
-
-        if (querySnapshot.empty) {
-            console.log("Aucun document trouvé avec cette valeur de quizz.");
-        }
-
-    } catch (error) {
-        console.error("Erreur lors de la récupération de l'ID :", error);
-    }
-}*/
-//startTimer();
-
-
-
-
-
-
-/*
-    const docRef = doc(db, "quizz", "41bUUuvo7avqvFcESbA7");
-    getDoc(docRef).then((docSnap) => {
-    if (docSnap.exists()) {
-      // Accéder au premier élément du tableau questions
-      const questionData = docSnap.data().questions[0];
-  
-      // Récupérer la question
-      const questionText = questionData.text;
-      console.log("Question:", questionText);
-  
-      // Récupérer les réponses
-      const options = questionData.options;
-      if (options.length >= 4) {
-        const answer1 = options[0].text;
-        const answer2 = options[1].text;
-        const answer3 = options[2].text;
-        const answer4 = options[3].text;
-  
-        console.log("Réponse 1:", answer1);
-        console.log("Réponse 2:", answer2);
-        console.log("Réponse 3:", answer3);
-        console.log("Réponse 4:", answer4);
-      } else {
-        console.log("Il n'y a pas assez de réponses dans options");
-      }
-    } else {
-      console.log("Le document n'existe pas !");
-    }
-  }).catch((error) => {
-    console.error("Erreur lors de la récupération du document:", error);
-  });*/
+getAllTextFields();

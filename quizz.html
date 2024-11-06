@@ -3,21 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Afficher uniquement le bloc 1 par défaut */
+        .content-block {
+            display: none;
+        }
+        #theme {
+            display: block;
+        }
+    </style>
 </head>
 <body>
 
-    <h1>Compte à rebours</h1>
-    <div id="timer">00:00</div>
+    <div id="theme" class="content-block">
+        <h1>Choix du thème</h1>
+        <div id="buttonContainer"></div>
+    </div>
 
-    <!-- Conteneur pour la question -->
-    <h2 id="questionText"></h2>
+    <div id="startQuizz" class="content-block">
+        <div id="texteTheme">t</div>
+        <button id="start" onclick="loadQuestionAndAnswers()">commencer le quiz</button><br>
+    </div>
 
-    <!-- Conteneur pour les boutons de réponse -->
-    <div id="answersContainer"></div>
     
-    <div id="score">0</div>
-
-    <button id="startQuizButton" onclick="loadQuestionAndAnswers()">commencer le quiz</button><br>
+    <div id="quizz" class="content-block">
+        <div id="timer">00:00</div>
+        <h2 id="questionText">Question affichée ici</h2>
+        <div id="answersContainer">Réponses affichées ici</div>
+        <div id="score">Score : 0</div>
+    </div>
     
     <script type="module" src="quizz.js"></script>
 
