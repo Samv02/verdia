@@ -299,6 +299,10 @@ img.imglogoLogin {
     max-width: 500px;
 }
 
+.btnresponsiveid{
+	display: none;
+}
+
 
 
 @media screen and (max-width:1030px)  {
@@ -327,6 +331,17 @@ img.imglogoLogin {
 		display: none;
 	}
 
+	a {
+		color: #333;
+		font-size: 14px;
+		text-decoration: none;
+		margin: 0px;
+	}
+
+	.btnresponsiveid{
+		display: flex;
+	}
+
 }
 
 @media screen and (max-width:600px)  {
@@ -345,3 +360,32 @@ img.imglogoLogin {
 	row-gap: 20px;
 }
 }
+
+
+
+@media screen and (max-width: 1030px) {
+    .sign-up-container {
+        left: 0;
+        width: 330px;
+        opacity: 0;
+        z-index: 1;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .sign-up-container {
+        left: 0;
+        width: 260px;
+        opacity: 0;
+        z-index: 1;
+    }
+}
+
+@media screen and (max-width:500px)  {
+	.sign-up-container {
+		left: 0;
+		width: 167px;
+		opacity: 0;
+		z-index: 1;
+	}}
+
