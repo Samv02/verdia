@@ -80,7 +80,6 @@ export async function getAllArticleByTheme(theme) {
             snapshot.forEach((doc) => {
                 articles.push({ id: doc.id, ...doc.data() });
             });
-            console.log("Articles trouvés :", articles);
             return articles;
         }
     } catch (error) {

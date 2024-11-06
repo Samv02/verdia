@@ -31,14 +31,6 @@ document.addEventListener("DOMContentLoaded", initThemesDiv);
 
 async function initThemesDiv() {
     // Appeler la fonction pour récupérer tous les thèmes
-    getAllThemes()
-        .then((themes) => {
-            console.log("Tous les thèmes :", themes);
-        })
-        .catch((error) => {
-            console.error("Erreur lors de la récupération des thèmes :", error);
-        });
-
     const themesTableau = await getAllThemes();
 
     //Construire les div pour chaque thème existant
@@ -53,7 +45,7 @@ async function initThemesDiv() {
             "rounded-lg",
             "p-4",
             "m-2",
-            "hover:bg-gray-100"
+            "hover:bg-green-300"
         );
         const p = document.createElement("p");
         p.textContent = theme;
@@ -174,7 +166,6 @@ async function showInputPopup() {
 
     // Si l'utilisateur a validé, afficher les données
     if (formValues) {
-        console.log("Données de l'article:", formValues);
         const article = {
             contenu: formValues.content,
             theme: formValues.theme,
