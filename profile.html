@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Ma Page Web</title>
+    </head>
+    <body>
+        <main class="flex flex-column overflow-y-auto padding-shadow">
+            <h2 class="bold">Profile</h2>
+            <p class="pb-4">Update your profile informations.</p>
+
+            <div class="h-full flex flex-row-to-col gap-2">
+                <div class="w-full flex flex-column gap-2">
+                    <h3 class="bold">Update your informations</h3>
+                    <form
+                        action=""
+                        method="post"
+                        class="flex flex-column gap-2"
+                    >
+                        <div class="rounded-box flex flex-column gap-2">
+                            <div class="flex flex-column">
+                                <label for="mail" class="bold">Mail</label>
+                                <input
+                                    type="text"
+                                    autocomplete="off"
+                                    id="mail"
+                                    name="mail"
+                                    class="input-form"
+                                    placeholder=""
+                                    aria-label="Mail"
+                                />
+                            </div>
+                            <div class="flex flex-column">
+                                <label for="username" class="bold"
+                                    >Username</label
+                                >
+                                <input
+                                    type="text"
+                                    autocomplete="off"
+                                    id="username"
+                                    name="username"
+                                    class="input-form"
+                                    placeholder=""
+                                    aria-label="Username"
+                                />
+                            </div>
+                            <div class="flex flex-column">
+                                <label for="firstname" class="bold"
+                                    >Firstname</label
+                                >
+                                <input
+                                    type="text"
+                                    autocomplete="off"
+                                    id="firstname"
+                                    name="firstname"
+                                    class="input-form"
+                                    placeholder=""
+                                    aria-label="Firstname"
+                                />
+                            </div>
+                            <div class="flex flex-column">
+                                <label for="lastname" class="bold"
+                                    >Lastname</label
+                                >
+                                <input
+                                    type="text"
+                                    autocomplete="off"
+                                    id="lastname"
+                                    name="lastname"
+                                    class="input-form"
+                                    placeholder=""
+                                    aria-label="Lastname"
+                                />
+                            </div>
+                        </div>
+                        <div class="center">
+                            <button
+                                type="submit"
+                                name="updateInfo"
+                                class="submit-button"
+                                aria-label="Mettre à jour les informations"
+                            >
+                                Mettre à jour
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="w-full flex flex-column gap-2">
+                    <h3 class="bold">Update your password</h3>
+                    <form
+                        action=""
+                        method="post"
+                        class="flex flex-column gap-2"
+                    >
+                        <div class="rounded-box flex flex-column gap-2">
+                            <div class="flex flex-column">
+                                <label for="password" class="bold"
+                                    >Password</label
+                                >
+                                <input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    placeholder="Password"
+                                    class="input-form"
+                                    aria-label="Password"
+                                />
+                            </div>
+                            <div class="flex flex-column">
+                                <label for="confirmPassword" class="bold"
+                                    >Confirm password</label
+                                >
+                                <input
+                                    type="password"
+                                    name="confirmPassword"
+                                    id="confirmPassword"
+                                    placeholder="Confirm password"
+                                    class="input-form"
+                                    aria-label="Confirm password"
+                                />
+                            </div>
+                        </div>
+                        <div class="center">
+                            <button
+                                type="submit"
+                                name="updatePassword"
+                                class="submit-button"
+                                aria-label="Mettre à jour le mot de passe"
+                            >
+                                Mettre à jour
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+        <!-- Firebase App (SDK) -->
+        <script
+            type="module"
+            src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"
+        ></script>
+
+        <!-- Firebase Auth SDK -->
+        <script
+            type="module"
+            src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js"
+        ></script>
+
+        <!-- Firebase Firestore SDK (si besoin pour envoyer le message) -->
+        <script
+            type="module"
+            src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"
+        ></script>
+        <script type="module" src="profile.js"></script>
+    </body>
+</html>
