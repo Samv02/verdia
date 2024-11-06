@@ -20,6 +20,7 @@ import { app } from "./script.js";
 
 import {
     getAllThemes,
+    getAllTheme,
     getAllArticleByTheme,
     insertArticle,
 } from "./db/article.js";
@@ -32,25 +33,53 @@ document.addEventListener("DOMContentLoaded", initThemesDiv);
 async function initThemesDiv() {
     // Appeler la fonction pour récupérer tous les thèmes
     const themesTableau = await getAllThemes();
+    const themeTab = await getAllTheme();
+    console.log(themeTab);
 
     //Construire les div pour chaque thème existant
-    themesTableau.forEach((theme) => {
+    themeTab.forEach((theme) => {
         const conteneur = document.getElementById("conteneur");
         const div = document.createElement("div");
         div.classList.add(
-            "flex",
-            "flex-col",
-            "border",
-            "border-black-200",
-            "rounded-lg",
-            "p-4",
-            "m-2",
-            "hover:bg-green-300"
+            // "flex",
+            // "flex-col",
+            // "border",
+            // "border-black-200",
+            // "rounded-lg",
+            // "p-4",
+            // "m-2",
+            // "hover:bg-green-300"
+            "max-w-xs",
+            "overflow-hidden",
+            "rounded",
+            "shadow-lg",
+            "transition",
+            "duration-300",
+            "ease-in-out",
+            "transform",
+            "hover:-translate-y-1",
+            "hover:scale-105",
+            "hover:shadow-2xl"
         );
-        const p = document.createElement("p");
-        p.textContent = theme;
-        div.appendChild(p);
+        const img = document.createElement("img");
+        img.classList.add("w-full", "object-cover");
+        img.src =
+            "https://images.partir.com/HlZJJUo6PASOAM-F_CMnsdLFQrE=/750x/filters:sharpen(0.3,0.3,true)/lieux-interet/nouvelle-caledonie/nouvelle-caledonie-lifou.jpg";
+        img.alt = theme.nom;
+        div.appendChild(img);
+        const titre = document.createElement("div");
+        titre.classList.add("px-6", "py-4");
+        const h1 = document.createElement("h1");
+        h1.classList.add("mb-2", "text-xl", "font-bold");
+        h1.textContent = theme.nom;
+        titre.appendChild(h1);
+        div.appendChild(titre);
         conteneur.appendChild(div);
+
+        // const p = document.createElement("p");
+        // p.textContent = theme.nom;
+        // div.appendChild(p);
+        // conteneur.appendChild(div);
 
         //Ajout du listener sur la div
         div.addEventListener("click", function () {

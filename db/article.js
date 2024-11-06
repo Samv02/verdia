@@ -66,6 +66,33 @@ export async function getAllThemes() {
     return Array.from(themes);
 }
 
+export async function getAllTheme() {
+    try {
+        // Accéder à la collection "theme"
+        const querySnapshot = await getDocs(collection(db, "theme"));
+
+        // Créer un tableau pour stocker les thèmes
+        const themes = [];
+
+        // Parcourir tous les documents et les ajouter au tableau
+        querySnapshot.forEach((doc) => {
+            // Chaque document est accessible via `doc.data()`
+            const themeData = doc.data();
+            // Ajouter un objet {nom, image} au tableau
+            themes.push({
+                nom: themeData.nom, // Nom du thème
+                image: themeData.image, // Image du thème
+            });
+        });
+
+        // Retourner le tableau des thèmes
+        return themes;
+    } catch (error) {
+        console.error("Erreur lors de la récupération des thèmes : ", error);
+        return [];
+    }
+}
+
 export async function getAllArticleByTheme(theme) {
     const articlesCollection = collection(db, "articles"); // Remplacez "articles" par le nom de votre collection
     const q = query(articlesCollection, where("theme", "==", theme)); // Filtre les articles avec le thème spécifié
