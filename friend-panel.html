@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Friend Panel</title>
+</head>
+<body>
+    <h1>Friend Panel</h1>
+    <div>
+        <strong>UID de l'utilisateur actuel :</strong>
+        <span id="userUid">Non connecté</span>
+    </div>
+    <h1>Liste d'Amis</h1>
+    <div id="friendsContainer"></div>
+    <div id="searchResult"></div>
+    <input type="text" id="searchUsername" placeholder="Entrez le username d'un utilisateur">
+    <button id="searchButton">Chercher</button>
+
+    <h2>Demandes d'Amis</h2>
+    <div id="requestsContainer"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs, doc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSH-hvCVkKhhMrdtfnoqSZ0TZzjmPMulo",
+            authDomain: "verdia-4401d.firebaseapp.com",
+            projectId: "verdia-4401d",
+            storageBucket: "verdia-4401d.firebasestorage.app",
+            messagingSenderId: "639552213584",
+            appId: "1:639552213584:web:b1ede9db70fc1cceb63755"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth();
+
+        let currentUserUid = null;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserUid = user.uid;
+                document.getElementById("userUid").textContent = currentUserUid; // Affiche l'UID
+                loadFriends();
+                loadFriendRequests();
+            } else {
+                console.log("Utilisateur non connecté.");
+            }
+        });
+
+        async function loadFriends() {
+            const friendsContainer = document.getElementById("friendsContainer");
+            friendsContainer.innerHTML = "";
+
+            const userDocRef = doc(db, "users", currentUserUid);
+            const friendsCollectionRef = collection(userDocRef, "Friends");
+
+            const friendsSnapshot = await getDocs(friendsCollectionRef);
+            if (friendsSnapshot.empty) {
+                document.getElementById("searchButton").addEventListener("click", searchUser);
+            } else {
+                friendsSnapshot.forEach((doc) => {
+                    const friendData = doc.data();
+                    friendsContainer.innerHTML += `<div>${friendData.username}</div>`;
+                });
+            }
+        }
+
+        async function searchUser() {
+            const username = document.getElementById("searchUsername").value;
+            const userQuery = query(collection(db, "users"), where("username", "==", username));
+            const userSnapshot = await getDocs(userQuery);
+
+            const searchResultContainer = document.getElementById("searchResult");
+            searchResultContainer.innerHTML = "";
+
+            if (!userSnapshot.empty) {
+                userSnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    searchResultContainer.innerHTML = `
+                        <div>
+                            Voulez-vous demander ${userData.username} en ami ?
+                            <button onclick="sendFriendRequest('${doc.id}', '${userData.username}')">Envoyer demande</button>
+                        </div>
+                    `;
+                });
+            } else {
+                searchResultContainer.innerHTML = "Utilisateur non trouvé.";
+            }
+        }
+
+        async function sendFriendRequest(targetUid, targetUsername) {
+            const targetUserDocRef = doc(db, "users", targetUid);
+            const requestsCollectionRef = collection(targetUserDocRef, "Requests");
+
+            await setDoc(doc(requestsCollectionRef, currentUserUid), {
+                requesterUid: currentUserUid,
+                requesterUsername: auth.currentUser.displayName || "Utilisateur",
+            });
+            alert("Demande d'ami envoyée !");
+        }
+
+        async function loadFriendRequests() {
+            const requestsContainer = document.getElementById("requestsContainer");
+            requestsContainer.innerHTML = "";
+
+            const userDocRef = doc(db, "users", currentUserUid);
+            const requestsCollectionRef = collection(userDocRef, "Requests");
+
+            const requestsSnapshot = await getDocs(requestsCollectionRef);
+            requestsSnapshot.forEach((doc) => {
+                const requestData = doc.data();
+                requestsContainer.innerHTML += `
+                    <div>
+                        ${requestData.requesterUsername} souhaite être votre ami.
+                        <button onclick="acceptFriendRequest('${doc.id}', '${requestData.requesterUid}', '${requestData.requesterUsername}')">Accepter</button>
+                        <button onclick="refuseFriendRequest('${doc.id}')">Refuser</button>
+                    </div>
+                `;
+            });
+        }
+
+        async function acceptFriendRequest(requestId, requesterUid, requesterUsername) {
+            const userDocRef = doc(db, "users", currentUserUid);
+            const friendsCollectionRef = collection(userDocRef, "Friends");
+            const requesterFriendsCollectionRef = collection(doc(db, "users", requesterUid), "Friends");
+
+            // Ajouter l'ami dans la collection des deux uses car amis mutuels
+            await setDoc(doc(friendsCollectionRef, requesterUid), { username: requesterUsername });
+            await setDoc(doc(requesterFriendsCollectionRef, currentUserUid), { username: auth.currentUser.displayName || "Utilisateur" });
+
+            // Supprimer la demande d'ami
+            await deleteDoc(doc(userDocRef, "Requests", requestId));
+            alert("Ami accepté !");
+            loadFriends();
+            loadFriendRequests();
+        }
+
+        async function refuseFriendRequest(requestId) {
+            const userDocRef = doc(db, "users", currentUserUid);
+            await deleteDoc(doc(userDocRef, "Requests", requestId));
+            alert("Demande refusée.");
+            loadFriendRequests();
+        }
+
+        
+        window.searchUser = searchUser;
+        window.sendFriendRequest = sendFriendRequest;
+        window.acceptFriendRequest = acceptFriendRequest;
+        window.refuseFriendRequest = refuseFriendRequest;
+    </script>
+</body>
+</html>

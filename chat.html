@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Firebase</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    
+    .container {
+      display: flex;
+      width: 80%;
+    }
+    
+    .chat-list {
+      width: 30%;
+      border-right: 1px solid #ccc;
+      padding: 10px;
+    }
+    
+    .chat-list h2 {
+      text-align: center;
+    }
+    
+    .chat-window {
+      width: 70%;
+      padding: 10px;
+    }
+    
+    #messages {
+      height: 400px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    
+    .sent {
+      text-align: right;
+      color: blue;
+    }
+    
+    .received {
+      text-align: left;
+      color: green;
+    }
+    
+    #messageInput {
+      width: 80%;
+      padding: 5px;
+      margin-right: 5px;
+    }
+    
+    #sendMessage {
+      padding: 5px;
+    }
+    
+    .selected {
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="chat-list" id="chatList">
+      <h2>Mes Conversations</h2>
+      <ul id="conversations"></ul>
+      <button id="newConversationButton">Nouvelle Conversation</button>
+      
+      <div id="newConversationForm" style="display: none;">
+        <input type="text" id="newUserInput" placeholder="ID de l'utilisateur">
+        <button id="startConversation">Démarrer</button>
+      </div>
+    </div>
+  
+    <div class="chat-window" id="chatWindow">
+      <div id="messages"></div>
+      <input type="text" id="messageInput" placeholder="Tapez un message...">
+      <button id="sendMessage">Envoyer</button>
+    </div>
+  </div>
+  
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, where, getDocs, orderBy, onSnapshot, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  
+    const firebaseConfig = {
+      apiKey: "AIzaSyBSH-hvCVkKhhMrdtfnoqSZ0TZzjmPMulo",
+      authDomain: "verdia-4401d.firebaseapp.com",
+      projectId: "verdia-4401d",
+      storageBucket: "verdia-4401d.firebasestorage.app",
+      messagingSenderId: "639552213584",
+      appId: "1:639552213584:web:b1ede9db70fc1cceb63755"
+    };
+  
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+  
+    let currentUser;
+    let selectedChatId = null;
+  
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        loadConversations();
+      } else {
+        console.log("L'utilisateur n'est pas connecté");
+      }
+    });
+  
+    async function loadConversations() {
+      const chatList = document.getElementById("conversations");
+      chatList.innerHTML = "";
+
+      const q = query(collection(db, "chat"), where("users", "array-contains", currentUser.uid));
+      const querySnapshot = await getDocs(q);
+
+      for (const documentSnapshot of querySnapshot.docs) {
+        const chatData = documentSnapshot.data();
+        const chatId = documentSnapshot.id;
+        const otherUserId = chatData.users.find(uid => uid !== currentUser.uid);
+
+        // Récupérer le pseudo de l'autre utilisateur
+        const userDoc = await getDoc(doc(db, "users", otherUserId));
+        const username = userDoc.exists() ? userDoc.data().username : "Inconnu";
+        const lastMessage = chatData.lastMessage || "";
+
+        const conversation = document.createElement("li");
+        conversation.id = chatId;
+        conversation.innerHTML = `<strong>${username}</strong><br><span>${lastMessage}</span>`;
+        conversation.onclick = () => {
+          selectConversation(chatId);
+          loadMessages(chatId);
+        };
+        chatList.appendChild(conversation);
+      }
+    }
+
+    function selectConversation(chatId) {
+      selectedChatId = chatId;
+      const conversations = document.querySelectorAll("#conversations li");
+      conversations.forEach((li) => li.classList.remove("selected"));
+      document.getElementById(chatId).classList.add("selected");
+    }
+  
+    async function loadMessages(chatId) {
+      const messagesDiv = document.getElementById("messages");
+      messagesDiv.innerHTML = "";
+  
+      const q = query(collection(db, "chat", chatId, "messages"), orderBy("timestamp"));
+      onSnapshot(q, (snapshot) => {
+        messagesDiv.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const message = doc.data();
+          const messageElement = document.createElement("div");
+          messageElement.className = message.senderUid === currentUser.uid ? "sent" : "received";
+          messageElement.innerText = message.content;
+          messagesDiv.appendChild(messageElement);
+        });
+      });
+    }
+  
+    document.getElementById("sendMessage").onclick = async () => {
+      const messageInput = document.getElementById("messageInput");
+      const messageContent = messageInput.value;
+  
+      if (messageContent && selectedChatId) {
+        await addDoc(collection(db, "chat", selectedChatId, "messages"), {
+          senderUid: currentUser.uid,
+          content: messageContent,
+          timestamp: Date.now()
+        });
+
+        // Mettre à jour le dernier message dans la conversation
+        await updateDoc(doc(db, "chat", selectedChatId), {
+          lastMessage: messageContent
+        });
+
+        messageInput.value = "";
+      }
+    };
+  
+    document.getElementById("newConversationButton").onclick = () => {
+      document.getElementById("newConversationForm").style.display = "block";
+    };
+  
+    document.getElementById("startConversation").onclick = async () => {
+      const newUserId = document.getElementById("newUserInput").value;
+  
+      if (newUserId) {
+        const existingConversation = await getDocs(query(collection(db, "chat"), where("users", "array-contains", currentUser.uid)));
+  
+        let conversationExists = false;
+        existingConversation.forEach((doc) => {
+          if (doc.data().users.includes(newUserId)) {
+            conversationExists = true;
+            selectConversation(doc.id);
+            loadMessages(doc.id);
+          }
+        });
+  
+        if (!conversationExists) {
+          const newChatRef = await addDoc(collection(db, "chat"), { users: [currentUser.uid, newUserId], lastMessage: "" });
+          selectConversation(newChatRef.id);
+          loadMessages(newChatRef.id);
+        }
+  
+        document.getElementById("newConversationForm").style.display = "none";
+        document.getElementById("newUserInput").value = "";
+      }
+    };
+  </script>
+</body>
