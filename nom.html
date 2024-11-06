@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <script type="module">
+        // Import des fonctions nécessaires depuis les SDK Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+        import { getFirestore, collection, doc, addDoc, updateDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        // Configuration de Firebase pour le projet verdia
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSH-hvCVkKhhMrdtfnoqSZ0TZzjmPMulo",
+            authDomain: "verdia-4401d.firebaseapp.com",
+            projectId: "verdia-4401d",
+            storageBucket: "verdia-4401d.firebasestorage.app",
+            messagingSenderId: "639552213584",
+            appId: "1:639552213584:web:b1ede9db70fc1cceb63755",
+            measurementId: "G-YV1L49M89L"
+        };
+
+        // Initialisation de Firebase et Firestore
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+        Swal.fire({
+            title: "Entrez votre pseudo",
+            input: "text",
+            inputAttributes: {
+                autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Valider",
+            showLoaderOnConfirm: true,
+            preConfirm: async (login) => {
+                try {
+                    const githubUrl = `
+                        https://api.github.com/users/${login}
+                    `;
+                    const response = await fetch(githubUrl);
+                    if (!response.ok) {
+                        return Swal.showValidationMessage(`
+                        ${JSON.stringify(await response.json())}
+                        `);
+                    }
+                    return response.json();
+                } catch (error) {
+                    Swal.showValidationMessage(`
+                        Request failed: ${error}
+                    `);
+                }
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+            }).then(async (result) => { // Utilise async ici pour pouvoir utiliser await
+                if (result.isConfirmed) {
+                    // Affiche une alerte de bienvenue
+                    Swal.fire({
+                        title: `Bienvenue ${result.value.login}`,
+                    });
+            }
+        // ID du document existant que tu souhaites mettre à jour
+        const userId = "OXhVgJX6YBPnmF6Gh3Kj";  // Remplace par l'ID réel du document à mettre à jour
+
+        // Référence au document spécifique dans Firestore
+        const userRef = doc(db, "users", userId);
+
+        // Mise à jour du document avec les nouvelles valeurs
+        try {
+            await updateDoc(userRef, {
+                prenom: result.value.login,  // Met à jour le pseudo
+            });
+            console.log("Document Firestore mis à jour avec succès !");
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour du document : ", error);
+        }
+        });
+    </script>
+</body>
+</html>
