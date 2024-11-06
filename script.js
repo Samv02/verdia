@@ -46,9 +46,12 @@ async function loginWithEmail() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     try {
+        console.log(auth + " " + email + " " + password);
         await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
         console.error("Erreur de connexion : ", error.message);
+        document.getElementById("connectionMessage").innerHTML =
+            "<p>Erreur de connexion</p>";
     }
 }
 window.loginWithEmail = loginWithEmail; // Rendre la fonction accessible globalement
@@ -61,6 +64,27 @@ async function signUpWithEmail() {
         await createUserWithEmailAndPassword(auth, email, password);
     } catch (error) {
         console.error("Erreur d'inscription : ", error.message);
+        switch (error.message) {
+            case "Firebase: Error (auth/email-already-in-use).":
+                Swal.fire({
+                    title: "Cet email est déjà utilisé.",
+                    icon: "error",
+                });
+                break;
+            case "Firebase: Password should be at least 6 characters (auth/weak-password).":
+                Swal.fire({
+                    title: "Le mot de passe doit contenir au moins 6 caractères.",
+                    icon: "error",
+                });
+                break;
+            case "Firebase: Error (auth/invalid-email).":
+                Swal.fire({
+                    title: "L'email est invalide.",
+                    icon: "error",
+                });
+                break;
+            default:
+        }
     }
 }
 window.signUpWithEmail = signUpWithEmail; // Rendre la fonction accessible globalement
