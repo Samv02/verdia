@@ -1,37 +1,3 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import {
-    getFirestore,
-    collection,
-    query,
-    doc,
-    getDoc,
-    getDocs,
-    where,
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-export const firebaseConfig = {
-    apiKey: "AIzaSyBSH-hvCVkKhhMrdtfnoqSZ0TZzjmPMulo",
-    authDomain: "verdia-4401d.firebaseapp.com",
-    projectId: "verdia-4401d",
-    storageBucket: "verdia-4401d.firebasestorage.app",
-    messagingSenderId: "639552213584",
-    appId: "1:639552213584:web:b1ede9db70fc1cceb63755",
-    measurementId: "G-YV1L49M89L",
-};
-
-export const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth();
-
-let currentQuestion = 0;
-let timeLeft = 1000;
-let score = 0;
-let timerInterval;
-let quizzTheme = null;
-let timerPopup;
-
-//function here
 async function getAllTextFields() {
     const quizzCollection = collection(db, "quizz");
     const container = document.getElementById("buttonContainer");
@@ -104,13 +70,125 @@ async function getAllTextFields() {
                 divTitre.appendChild(titreQuizz);
                 divQuizz.appendChild(divTitre);
                 divQuizz.onclick = () => {
-                    console.log("redirect matchmaking");
-                    const param = "quizz";
-                    const value = data.quizz;
-                    const url = `matchmaking.html?${param}=${encodeURIComponent(
-                        value
-                    )}`;
-                    window.location.href = url;
+                    fetchQuizId(docId, data.quizz);
+                };
+
+                // Ajouter la div quizz au container
+                container.appendChild(divQuizz);
+            }
+        });
+    } catch (error) {
+        console.error(
+            "Erreur lors de la récupération des champs text :",
+            error
+        );
+    }
+}
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import {
+    getFirestore,
+    collection,
+    query,
+    doc,
+    getDoc,
+    getDocs,
+    where,
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+export const firebaseConfig = {
+    apiKey: "AIzaSyBSH-hvCVkKhhMrdtfnoqSZ0TZzjmPMulo",
+    authDomain: "verdia-4401d.firebaseapp.com",
+    projectId: "verdia-4401d",
+    storageBucket: "verdia-4401d.firebasestorage.app",
+    messagingSenderId: "639552213584",
+    appId: "1:639552213584:web:b1ede9db70fc1cceb63755",
+    measurementId: "G-YV1L49M89L",
+};
+
+export const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const auth = getAuth();
+
+let currentQuestion = 0;
+let timeLeft = 1000;
+let score = 0;
+let timerInterval;
+let quizzTheme = null;
+
+async function getAllTextFields() {
+    const quizzCollection = collection(db, "quizz");
+    const container = document.getElementById("buttonContainer");
+
+    try {
+        const querySnapshot = await getDocs(quizzCollection);
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const docId = doc.id;
+
+            if (data.quizz) {
+                //Creation de la div pour le quizz
+                const divQuizz = document.createElement("div");
+                divQuizz.classList.add(
+                    "relative",
+                    "bg-cover",
+                    "bg-center",
+                    "h-64",
+                    "rounded",
+                    "shadow-lg",
+                    "transition",
+                    "duration-300",
+                    "ease-in-out",
+                    "transform",
+                    "hover:-translate-y-1",
+                    "hover:scale-105",
+                    "hover:shadow-2xl",
+                    "cursor-pointer"
+                );
+                const divImage = document.createElement("div");
+                divImage.classList.add(
+                    "absolute",
+                    "inset-0",
+                    "rounded",
+                    "bg-cover",
+                    "bg-center",
+                    "filter",
+                    "brightness-50",
+                    "z-0"
+                );
+                const linkImage = data.quizz + ".webp";
+                const encodedUrl = encodeURIComponent(linkImage);
+                divImage.style.backgroundImage = `url("${encodedUrl}")`;
+                divQuizz.appendChild(divImage);
+                //Creation du titre du quizz
+                const divTitre = document.createElement("div");
+                divTitre.classList.add(
+                    "px-6",
+                    "py-4",
+                    "relative",
+                    "z-10",
+                    "flex",
+                    "items-center",
+                    "justify-center",
+                    "h-full"
+                );
+
+                const titreQuizz = document.createElement("h1");
+                titreQuizz.classList.add(
+                    "px-6",
+                    "py-3",
+                    "text-1xl",
+                    "font-bold",
+                    "text-center",
+                    "text-white",
+                    "shadow-lg"
+                );
+                titreQuizz.textContent = data.quizz;
+                divTitre.appendChild(titreQuizz);
+                divQuizz.appendChild(divTitre);
+                divQuizz.onclick = () => {
                     fetchQuizId(docId, data.quizz);
                 };
 
@@ -164,7 +242,8 @@ function loadQuestionAndAnswers() {
                 questionData.options.forEach((option, index) => {
                     const button = document.createElement("button");
                     button.textContent = option.text;
-                    button.onclick = () => handleAnswerClick(option.istrue);
+                    button.onclick = () =>
+                        handleAnswerClick(option.istrue, index);
                     answersContainer.appendChild(button);
                 });
                 startTimer();
@@ -216,59 +295,32 @@ async function updateTimer() {
 }
 
 // Fonction pour gérer le clic sur une réponse
-async function handleAnswerClick(isTrue) {
+async function handleAnswerClick(isTrue, index) {
     const currentTimerValue = document.getElementById("timer").textContent;
+    alert(`Timer arrêté : ${currentTimerValue}`); // Afficher la valeur du timer
     document.querySelectorAll("button").forEach((button) => {
         button.disabled = true;
     });
     if (isTrue) {
         score += Math.round(currentTimerValue * 100);
         document.getElementById("score").textContent = score;
-        Swal.fire({
-            icon: "success",
-            html: "Vous avez gagné" + score + "points",
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: () => {
-                Swal.showLoading();
-                const timer = Swal.getPopup().querySelector("b");
-                timerPopup = setInterval(() => {
-                    timer.textContent = `${Swal.getTimerLeft()}`;
-                }, 100);
-            },
-            willClose: () => {
-                clearInterval(timerPopup);
-            },
-        }).then((result) => {
-            /* Read more about handling dismissals below */
-            if (result.dismiss === Swal.DismissReason.timer) {
-                console.log("I was closed by the timer");
-            }
-        });
+        alert(`Bonne réponse !`);
     } else {
-        Swal.fire({
-            icon: "error",
-            html: "Mauvaise réponse",
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: () => {
-                Swal.showLoading();
-                const timer = Swal.getPopup().querySelector("b");
-                timerPopup = setInterval(() => {
-                    timer.textContent = `${Swal.getTimerLeft()}`;
-                }, 100);
-            },
-            willClose: () => {
-                clearInterval(timerPopup);
-            },
-        }).then((result) => {
-            /* Read more about handling dismissals below */
-            if (result.dismiss === Swal.DismissReason.timer) {
-                console.log("I was closed by the timer");
-            }
-        });
+        alert(`Mauvaise réponse`);
     }
 }
 
-//getAllTextFields();
 document.addEventListener("DOMContentLoaded", getAllTextFields);
+//getAllTextFields();
+
+// Choix du matchmaking standard
+function selectMatchmaking() {
+    document.querySelector(".button-container").style.display = "none";
+    document.querySelector(".matchmaking-container").style.display = "block";
+    // Crée un objet URLSearchParams avec les paramètres de l'URL actuelle
+    const params = new URLSearchParams(window.location.search);
+
+    // Récupère le paramètre "theme"
+    const theme = params.get("quizz");
+    findOrCreateSession(theme);
+}

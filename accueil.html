@@ -7,40 +7,138 @@
     <link rel="stylesheet" href="accueil.css">
 </head>
 <body>
+<!-- nav -->
+  <header class="header">
+    <div class="gauche">
+      <li class="header__list">
+        <a class="header__link" href="#"><img class="logonav" src="imageSite/LOGOECO.png"></a>
+      </li>
+    </div>
+    <div class="centre">
+        <a href="accueil.html">ACCUEIL</a>
+        <a href="quiz.html">QUIZZ</a>
+        <a href="news.html">NEWS</a>
+      </a>
+    </div>
+    <div class="droite">
+      <ul class="header__nav">
+        <li class="header__list">
+          <a class="header__link" href="login.php">
+            <img class="iconBlack" src="imageSite/icones/friend.png">
+            <img class="iconWhite" src="imageSite/icones/friend.png">
+          </a>
+        </li>
+
+        <li class="header__list">
+            <a class="header__link" href="login.php">
+              <img class="iconBlack" src="imageSite/icones/cht.png">
+              <img class="iconWhite" src="imageSite/icones/cht.png">
+            </a>
+          </li>
+      
+          <li class="header__list">
+            <a class="header__link" href="login.php">
+              <img class="iconBlack" src="imageSite/icones/profilfriends.png">
+              <img class="iconWhite" src="imageSite/icones/profilfriends.png">
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+    
+  </header>
+
+  <!-- nav end -->
+
     <div class="container">
-        <h1>Bienvenue sur Verdia !</h1>
-        <p>Un espace dans lequel vous pouvez challenger vos amis</p>
+        
         
         <div class="input-section">
+            <h1>ECO'MY</h1>
+            <p>DEFIS DU JOUR</p>
+            <br>
+
            
-            <label for="recyclage">Score Recyclage:</label>
-            <input type="number" id="recyclage" placeholder="Score de recyclage">
-
-            <label for="carbone">Score Carbone:</label>
-            <input type="number" id="carbone" placeholder="Score carbone">
-
-            <label for="energie">Score Énergie:</label>
-            <input type="number" id="energie" placeholder="Score énergie">
-            
-            <button id="envoyerScoresButton">Envoyer les Scores</button>
-        </div>
-
-        <div id="result" class="result-section">
-            <h2 id="score">Votre Score Écologique: </h2>
-        </div>
-
-        <div class="quiz-section">
-            <h3>Quiz Écologiques</h3>
-            <div class="quiz-bubbles">
-                <div class="quiz-bubble">Quiz 1</div>
-                <div class="quiz-bubble">Quiz 2</div>
-                <div class="quiz-bubble">Quiz 3</div>
-                <div class="quiz-bubble">Quiz 4</div>
-                <div class="quiz-bubble">Quiz 5</div>
+                <label for="recyclage">Score Recyclage</label>
+            <div class="formaccueil">
+                <input type="number" id="recyclage" placeholder="Score de recyclage">
+                <img class="checkform" src="imageSite/icones/check_5610944.png" alt="">
             </div>
+
+            <label for="carbone">Score Carbone</label>
+            <div class="formaccueil">
+            <input type="number" id="carbone" placeholder="Score carbone">
+            <img class="checkform" src="imageSite/icones/check_5610944.png" alt="">
+
+            </div>
+
+            <label for="energie">Score Énergie</label>
+            <div class="formaccueil">
+            <input type="number" id="energie" placeholder="Score énergie">
+            <img class="checkform" src="imageSite/icones/check_5610944.png" alt="">
+
+            </div>
+            <br>
+            
+        
         </div>
+        <div class="input-section right">
+            
+           <img class="camcam" src="imageSite/icones/camamber/camamberd4.png" alt="">
+
+           <div class="allblockscore">
+           <div class="blockscore">
+            <p>155k</p>
+            <img src="imageSite/icones/Conteurdemondesurl'appli.png" alt="">
+           </div>
+
+           <div class="blockscore">
+            <p>155k</p>
+            <img src="imageSite/icones/scorequizz.png" alt="">
+           </div>
+        </div>
+
+        <button id="envoyerScoresButton">Envoyer les Scores</button>
+            
+        
+        </div>
+ 
+        
     </div>
 
+    <div id="result" class="result-section">
+        <h1 id="score">NOS QUIZZ </h1>
+        <p>NOS MEILLEURE THEME </p>
+    </div>
+
+    <div class="quiz-section">
+        <div class="quiz-bubbles">
+            <div id="Quiz 1" class="quiz-bubble">Les gestes quotidiens pour protéger l’environnement</div>
+            <div id="Quiz 2" class="quiz-bubble">Comprendre le changement climatique</div>
+            <div id="Quiz 3" class="quiz-bubble">Les énergies renouvelables et durables</div>
+            <div id="Quiz 4" class="quiz-bubble">La biodiversité et la protection des espèces</div>
+            <div id="Quiz 5" class="quiz-bubble">Réduire, réutiliser, recycler : pratiques du zéro déchet</div>
+            <div id="Quiz 6" class="quiz-bubble">L’impact de la pollution de l'air et comment la réduire</div>
+            <div id="Quiz 7" class="quiz-bubble">L’eau : préservation et gestion des ressources</div>
+            <div id="Quiz 8" class="quiz-bubble">Alimentation durable : réduire son empreinte écologique</div>
+        </div>
+    </div>
+    <footer>
+        <div class="logof">
+          <img src="imageSite/LOGOECO.png" alt="">
+        </div>
+        <br>
+        <div class="textFooter">
+            <a href="accueil.html">ACCUEIL</a>
+            <a href="quiz.html">QUIZZ</a>
+            <a href="news.html">NEWS</a>
+        </div>
+        <br>
+        <p>MADE BY WAFD AGNECY - ©2024 - WAFDAGENCY@GMAIL.COM</p>
+      </footer>
+
     <script src="accueil.js" type="module"></script>
+    <script src="script.js"></script>
+
 </body>
 </html>

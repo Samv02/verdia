@@ -48,22 +48,49 @@ export const getArticles = async () => {
     return articles;
 };
 
-export async function getAllThemes() {
-    const articlesCollection = collection(db, "articles"); // Remplacez "articles" par le nom de votre collection d'articles
-    const snapshot = await getDocs(articlesCollection);
+// export async function getAllThemes() {
+//     const articlesCollection = collection(db, "articles"); // Remplacez "articles" par le nom de votre collection d'articles
+//     const snapshot = await getDocs(articlesCollection);
 
-    // Utiliser un Set pour obtenir des thèmes uniques
-    const themes = new Set();
+//     // Utiliser un Set pour obtenir des thèmes uniques
+//     const themes = new Set();
 
-    snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.theme) {
-            themes.add(data.theme); // Ajoute le thème à l'ensemble (Set)
-        }
-    });
+//     snapshot.forEach((doc) => {
+//         const data = doc.data();
+//         if (data.theme) {
+//             themes.add(data.theme); // Ajoute le thème à l'ensemble (Set)
+//         }
+//     });
 
-    // Convertir l'ensemble en tableau
-    return Array.from(themes);
+//     // Convertir l'ensemble en tableau
+//     return Array.from(themes);
+// }
+
+export async function getAllTheme() {
+    try {
+        // Accéder à la collection "theme"
+        const querySnapshot = await getDocs(collection(db, "theme"));
+
+        // Créer un tableau pour stocker les thèmes
+        const themes = [];
+
+        // Parcourir tous les documents et les ajouter au tableau
+        querySnapshot.forEach((doc) => {
+            // Chaque document est accessible via `doc.data()`
+            const themeData = doc.data();
+            // Ajouter un objet {nom, image} au tableau
+            themes.push({
+                nom: themeData.nom, // Nom du thème
+                image: themeData.image, // Image du thème
+            });
+        });
+
+        // Retourner le tableau des thèmes
+        return themes;
+    } catch (error) {
+        console.error("Erreur lors de la récupération des thèmes : ", error);
+        return [];
+    }
 }
 
 export async function getAllArticleByTheme(theme) {
@@ -80,7 +107,6 @@ export async function getAllArticleByTheme(theme) {
             snapshot.forEach((doc) => {
                 articles.push({ id: doc.id, ...doc.data() });
             });
-            console.log("Articles trouvés :", articles);
             return articles;
         }
     } catch (error) {
@@ -96,8 +122,10 @@ export async function insertArticle(article) {
             contenu: article.contenu,
             theme: article.theme,
             titre: article.titre,
+            image: article.image,
             createdAt: new Date(), // Ajoute un timestamp de création
         });
+        console.log(article.image);
 
         console.log("Article ajouté avec l'ID :", docRef.id);
         return docRef.id; // Retourne l'ID du document ajouté

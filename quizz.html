@@ -1,40 +1,99 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* Afficher uniquement le bloc 1 par défaut */
-        .content-block {
-            display: none;
-        }
-        #theme {
-            display: block;
-        }
-    </style>
-</head>
-<body>
+    <header class="header">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="accueil.css">
 
-    <div id="theme" class="content-block">
-        <h1>Choix du thème</h1>
-        <div id="buttonContainer"></div>
-    </div>
+            <div class="gauche">
+              <li class="header__list">
+                <a class="header__link" href="#"><img class="logonav" src="imageSite/LOGOECO.png"></a>
+              </li>
+            </div>
+            <div class="centre">
+                <a href="accueil.html">ACCUEIL</a>
+                <a href="quiz.html">QUIZZ</a>
+                <a href="news.html">NEWS</a>
+              </a>
+            </div>
+            <div class="droite">
+              <ul class="header__nav">
+                <li class="header__list">
+                  <a class="header__link" href="login.php">
+                    <img class="iconBlack" src="imageSite/icones/friend.png">
+                    <img class="iconWhite" src="imageSite/icones/friend.png">
+                  </a>
+                </li>
+        
+                <li class="header__list">
+                    <a class="header__link" href="login.php">
+                      <img class="iconBlack" src="imageSite/icones/cht.png">
+                      <img class="iconWhite" src="imageSite/icones/cht.png">
+                    </a>
+                  </li>
+              
+                  <li class="header__list">
+                    <a class="header__link" href="login.php">
+                      <img class="iconBlack" src="imageSite/icones/profilfriends.png">
+                      <img class="iconWhite" src="imageSite/icones/profilfriends.png">
+                    </a>
+                  </li>
+                
+              </ul>
+            </div>
+            
+          </header>
+        <!-- <style>
+            /* Afficher uniquement le bloc 1 par défaut */
+            .content-block {
+                display: none;
+            }
+            #theme {
+                display: block;
+            }
+        </style> -->
+    <body class="flex items-center justify-center">
+        <main class="w-3/4">
+            <div id="theme" class="w-full h-full">
+                <h1>Choix du thème</h1>
+                <div
+                    id="buttonContainer"
+                    class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 border-2 border-black-300 rounded-lg p-4 w-full"
+                ></div>
+            </div>
 
-    <div id="startQuizz" class="content-block">
-        <div id="texteTheme">t</div>
-        <button id="start" onclick="loadQuestionAndAnswers()">commencer le quiz</button><br>
-    </div>
+            <div id="startQuizz" class="">
+                <div id="texteTheme">t</div>
+                <button id="start" onclick="loadQuestionAndAnswers()">
+                    commencer le quiz</button
+                ><br />
+            </div>
 
-    
-    <div id="quizz" class="content-block">
-        <div id="timer">00:00</div>
-        <h2 id="questionText">Question affichée ici</h2>
-        <div id="answersContainer">Réponses affichées ici</div>
-        <div id="score">Score : 0</div>
-    </div>
-    
-    <script type="module" src="quizz.js"></script>
-
-
-</body>
+            <div id="quizz" class="hidden">
+                <div id="timer">00:00</div>
+                <h2 id="questionText">Question affichée ici</h2>
+                <div id="answersContainer">Réponses affichées ici</div>
+                <div id="score">Score : 0</div>
+            </div>
+        </main>
+        <footer>
+            <div class="logof">
+              <img src="imageSite/LOGOECO.png" alt="">
+            </div>
+            <br>
+            <div class="textFooter">
+                <a href="accueil.html">ACCUEIL</a>
+                <a href="quiz.html">QUIZZ</a>
+                <a href="news.html">NEWS</a>
+            </div>
+            <br>
+            <p>MADE BY WAFD AGNECY - ©2024 - WAFDAGENCY@GMAIL.COM</p>
+          </footer>
+          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script type="module" src="quizz.js"></script>
+    </body>
 </html>
