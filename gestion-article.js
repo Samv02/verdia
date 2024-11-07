@@ -146,7 +146,7 @@ async function clickOnTheme(theme) {
             date.toLocaleTimeString();
         articleConteneur.appendChild(dateCreation);
         const titreArticle = document.createElement("h3");
-        titreArticle.classList.add("text-2xl", "font-bold", "pb-4");
+        titreArticle.classList.add("text-2xl", "font-bold", "pb-4", "pt-4");
         titreArticle.innerText = article.titre;
         articleConteneur.appendChild(titreArticle);
         const divParagraphe = document.createElement("div");
