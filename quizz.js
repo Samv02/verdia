@@ -94,8 +94,6 @@ async function getAllTextFields() {
                     "h-64",
                     "rounded",
                     "shadow-lg",
-                    "filter",
-                    "brightness-50",
                     "transition",
                     "duration-300",
                     "ease-in-out",
@@ -105,18 +103,40 @@ async function getAllTextFields() {
                     "hover:shadow-2xl",
                     "cursor-pointer"
                 );
-                divQuizz.style.backgroundImage =
-                    "url('https://images.unsplash.com/photo-1505706374141-cdc21fce2e03?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"; //`url(${data.image})`;
-
-                //Creation du titre du quizz
-                const divTitre = document.createElement("div");
-                divTitre.classList.add(
+                const divImage = document.createElement("div");
+                divImage.classList.add(
                     "absolute",
                     "inset-0",
+                    "rounded",
+                    "bg-cover",
+                    "bg-center",
+                    "filter",
+                    "brightness-50",
+                    "z-0"
+                );
+                const linkImage = data.quizz + ".webp";
+                const encodedUrl = encodeURIComponent(linkImage);
+                divImage.style.backgroundImage = `url("${encodedUrl}")`;
+                divQuizz.appendChild(divImage);
+                //Creation du titre du quizz
+                const divTitre = document.createElement("div");
+                // divTitre.classList.add(
+                //     "absolute",
+                //     "inset-0",
+                //     "flex",
+                //     "items-center",
+                //     "justify-center",
+                //     "filter"
+                // );
+                divTitre.classList.add(
+                    "px-6",
+                    "py-4",
+                    "relative",
+                    "z-10",
                     "flex",
                     "items-center",
                     "justify-center",
-                    "filter"
+                    "h-full"
                 );
 
                 const titreQuizz = document.createElement("h1");
@@ -254,4 +274,5 @@ async function handleAnswerClick(isTrue, index) {
     }
 }
 
-getAllTextFields();
+document.addEventListener("DOMContentLoaded", getAllTextFields);
+//getAllTextFields();
