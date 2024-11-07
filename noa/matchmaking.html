@@ -129,8 +129,8 @@
         date_creation: Date.now(),
         gagnant: "",
         quizz: "private",
-        score:  [0 = 0, 1 = 0],
-        users:  [ 0 = userUID, 1 = "privé" ]
+        score:  [0, 0],
+        users:  [userUID, "privé" ],
       });
       
       sessionId = newSessionDoc.id;
@@ -184,8 +184,8 @@
           date_creation: Date.now(),
           gagnant: "",
           quizz: quizz,
-          score: [0 = 0, 1 = 0],
-          users: [ 0 = userUID, 0 = null ]
+          score: [0, 0],
+          users: [userUID, null ]
         });
         sessionId = newSessionDoc.id;
 
