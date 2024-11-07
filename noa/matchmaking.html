@@ -164,7 +164,7 @@
 
     async function findOrCreateSession(quizz) {
       const sessionRef = collection(db, "session");
-      const sessionQuery = query(sessionRef, where("quizz", "==", quizz), where("users.1", "==", null));
+      const sessionQuery = query(sessionRef, where("quizz", "==", quizz), where("users[1]", "==", null));
       const sessionSnapshot = await getDocs(sessionQuery);
 
       if (!sessionSnapshot.empty) {
@@ -173,7 +173,7 @@
 
         // Rejoindre la session
         await updateDoc(sessionDoc.ref, {
-          "users.1": userUID
+          "users[1]": userUID
         });
         
         // Suivre les changements pour afficher le profil de l'autre utilisateur
