@@ -27,10 +27,41 @@ async function envoyerScores() {
             score_carbone: scoreCarbone,
             score_energie: scoreEnergie
         });
+
+        Swal.fire({
+            title: "Les scores ont été mis à jour avec succès !",
+            icon: "success"
+          });
         console.log("Les scores ont été mis à jour avec succès !");
     } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Erreur lors de la mise à jour des scores !",
+            footer: '<a href="#">Why do I have this issue?</a>'
+        });
         console.error("Erreur lors de la mise à jour des scores :", error);
     }
 }
 
 document.getElementById("envoyerScoresButton").addEventListener("click", envoyerScores);
+
+// Show chat widget when clicking the "cht.png" button
+document.getElementById("chatButton").addEventListener("click", function (event) {
+    event.preventDefault();
+    document.getElementById("chatWidget").style.display = "block";
+});
+
+// Close chat widget when clicking the close button
+document.getElementById("closeChatWidget").addEventListener("click", function () {
+    document.getElementById("chatWidget").style.display = "none";
+});
+// Show friend panel widget when clicking the "profilfriends.png" button
+document.getElementById("friendButton").addEventListener("click", function (event) {
+    event.preventDefault();
+    document.getElementById("friendPanelWidget").style.display = "block";
+});
+
+// Close friend panel widget when clicking the close button
+document.getElementById("closeFriendPanel").addEventListener("click", function () {
+    document.getElementById("friendPanelWidget").style.display = "none";
+});

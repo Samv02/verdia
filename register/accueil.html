@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page d'Accueil Écologique</title>
-    <link rel="stylesheet" href="accueil.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page d'Accueil Écologique</title>
+  <link rel="stylesheet" href="accueil.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body>
-<!-- nav -->
+  <!-- nav -->
   <header class="header">
     <div class="gauche">
       <li class="header__list">
@@ -15,114 +18,138 @@
       </li>
     </div>
     <div class="centre">
-        <a href="accueil.html">ACCUEIL</a>
-        <a href="quiz.html">QUIZZ</a>
-        <a href="news.html">NEWS</a>
+      <a href="accueil.html">ACCUEIL</a>
+      <a href="quiz.html">QUIZ</a>
+      <a href="news.html">NEWS</a>
       </a>
     </div>
     <div class="droite">
       <ul class="header__nav">
         <li class="header__list">
-          <a class="header__link" href="login.php">
+          <a class="header__link" href="">
             <img class="iconBlack" src="imageSite/icones/friend.png">
             <img class="iconWhite" src="imageSite/icones/friend.png">
           </a>
         </li>
+        <li class="header__list">
+          <a class="header__link" href="#" id="chatButton">
+            <img class="iconBlack" src="imageSite/icones/cht.png">
+            <img class="iconWhite" src="imageSite/icones/cht.png">
+          </a>
+        </li>
+
+
+        <!-- Chat Widget Overlay -->
+        <div id="chatWidget" class="chat-widget" style="display: none;">
+          <div class="chat-widget-header">
+            <span>Chat</span>
+            <button id="closeChatWidget">✕</button>
+          </div>
+          <iframe src="../chat.html" id="chatIframe" frameborder="0"></iframe>
+        </div>
+
+
+
 
         <li class="header__list">
-            <a class="header__link" href="login.php">
-              <img class="iconBlack" src="imageSite/icones/cht.png">
-              <img class="iconWhite" src="imageSite/icones/cht.png">
-            </a>
-          </li>
-      
-          <li class="header__list">
-            <a class="header__link" href="login.php">
+          <a class="header__link" href="#" id="friendButton">
               <img class="iconBlack" src="imageSite/icones/profilfriends.png">
               <img class="iconWhite" src="imageSite/icones/profilfriends.png">
-            </a>
-          </li>
-        
+          </a>
+      </li>
+      
+
+        <!-- Friend Panel Widget Overlay -->
+        <div id="friendPanelWidget" class="friend-panel-widget" style="display: none;">
+          <div class="friend-panel-header">
+            <span>Amis</span>
+            <button id="closeFriendPanel">✕</button>
+          </div>
+          <iframe src="../friend-panel.html" id="friendIframe" frameborder="0"></iframe>
+        </div>
+
+
       </ul>
     </div>
-    
+
   </header>
 
   <!-- nav end -->
 
-    <div class="container">
-        
-        
-        <div class="input-section">
-            <h1>ECO'MY</h1>
-            <p>DEFIS DU JOUR</p>
-            <br>
+  <div class="container">
 
-           
-                <label for="recyclage">Score Recyclage</label>
-            <div class="formaccueil">
-                <input type="number" id="recyclage" placeholder="Score de recyclage">
-                <img class="checkform" src="imageSite/icones/check_5610944.png" alt="">
-            </div>
 
-            <label for="carbone">Score Carbone</label>
-            <div class="formaccueil">
-            <input type="number" id="carbone" placeholder="Score carbone">
-            <img class="checkform" src="imageSite/icones/check_5610944.png" alt="">
+    <div class="input-section">
+      <h1>VERDIA</h1>
+      <p>DEFIS DU JOUR</p>
+      <br>
 
-            </div>
 
-            <label for="energie">Score Énergie</label>
-            <div class="formaccueil">
-            <input type="number" id="energie" placeholder="Score énergie">
-            <img class="checkform" src="imageSite/icones/check_5610944.png" alt="">
+      <label for="recyclage">Score Recyclage</label>
+      <div class="formaccueil">
+        <input type="number" id="recyclage" placeholder="Score de recyclage">
+        <img class="checkform" src="imageSite/icones/check_5610944.png" alt="">
+      </div>
 
-            </div>
-            <br>
-            
-        
-        </div>
-        <div class="input-section right">
-            
-           <img class="camcam" src="imageSite/icones/camamber/camamberd4.png" alt="">
+      <label for="carbone">Score Carbone</label>
+      <div class="formaccueil">
+        <input type="number" id="carbone" placeholder="Score carbone">
+        <img class="checkform" src="imageSite/icones/check_5610944.png" alt="">
 
-           <div class="allblockscore">
-           <div class="blockscore">
-            <p>155k</p>
-            <img src="imageSite/icones/Conteurdemondesurl'appli.png" alt="">
-           </div>
+      </div>
 
-           <div class="blockscore">
-            <p>155k</p>
-            <img src="imageSite/icones/scorequizz.png" alt="">
-           </div>
+      <label for="energie">Score Énergie</label>
+      <div class="formaccueil">
+        <input type="number" id="energie" placeholder="Score énergie">
+        <img class="checkform" src="imageSite/icones/check_5610944.png" alt="">
+
+      </div>
+      <br>
+
+
+    </div>
+    <div class="input-section right">
+
+      <img class="camcam" src="imageSite/icones/camamber/camamberd4.png" alt="">
+
+      <div class="allblockscore">
+        <div class="blockscore">
+          <p>155k</p>
+          <img src="imageSite/icones/Conteurdemondesurl'appli.png" alt="">
         </div>
 
-        <button id="envoyerScoresButton">Envoyer les Scores</button>
-            
-        
+        <div class="blockscore">
+          <p>155k</p>
+          <img src="imageSite/icones/scorequizz.png" alt="">
         </div>
- 
-        
+      </div>
+
+      <button id="envoyerScoresButton">Envoyer les Scores</button>
+
+
     </div>
 
-    <div id="result" class="result-section">
-        <h2 id="score">Votre Score Écologique: </h2>
-        <p>Quiz Écologiques</p>
-    </div>
 
-    <div class="quiz-section">
-        <div class="quiz-bubbles">
-            <div class="quiz-bubble">Quiz 1</div>
-            <div class="quiz-bubble">Quiz 2</div>
-            <div class="quiz-bubble">Quiz 3</div>
-            <div class="quiz-bubble">Quiz 4</div>
-            <div class="quiz-bubble">Quiz 5</div>
-        </div>
-    </div>
+  </div>
 
-    <script src="accueil.js" type="module"></script>
-    <script src="script.js"></script>
+  <div id="result" class="result-section">
+    <h2 id="score">Votre Score Écologique: </h2>
+    <p>Quiz Écologiques</p>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-bubbles">
+      <div class="quiz-bubble">Quiz 1</div>
+      <div class="quiz-bubble">Quiz 2</div>
+      <div class="quiz-bubble">Quiz 3</div>
+      <div class="quiz-bubble">Quiz 4</div>
+      <div class="quiz-bubble">Quiz 5</div>
+    </div>
+  </div>
+
+  <script src="accueil.js" type="module"></script>
+  <script src="script.js"></script>
 
 </body>
+
 </html>
