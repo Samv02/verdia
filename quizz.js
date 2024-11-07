@@ -1,7 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import {
-    getAuth,
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
     getFirestore,
     collection,
@@ -9,7 +7,7 @@ import {
     doc,
     getDoc,
     getDocs,
-    where
+    where,
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 export const firebaseConfig = {
@@ -33,83 +31,174 @@ let timerInterval;
 let quizzTheme = null;
 
 async function getAllTextFields() {
-  const quizzCollection = collection(db, "quizz");
-  const container = document.getElementById("buttonContainer");
-  
-  try {
-    const querySnapshot = await getDocs(quizzCollection);
-    
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      const docId = doc.id;
+    const quizzCollection = collection(db, "quizz");
+    const container = document.getElementById("buttonContainer");
 
-      if (data.quizz) {
-        const button = document.createElement("button");
-        button.innerText = data.quizz;
+    try {
+        const querySnapshot = await getDocs(quizzCollection);
 
-        // Ajouter un événement onclick pour afficher l'ID du document dans la console
-        button.onclick = () => {
-          fetchQuizId(docId,data.quizz);
-        };
-        
-        // Ajouter le bouton au container
-        container.appendChild(button);
-      }
-    });
-  } catch (error) {
-    console.error("Erreur lors de la récupération des champs text :", error);
-  }
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const docId = doc.id;
+
+            if (data.quizz) {
+                //const button = document.createElement("button");
+                //button.innerText = data.quizz;
+
+                // Ajouter un événement onclick pour afficher l'ID du document dans la console
+                // button.onclick = () => {
+                //     fetchQuizId(docId, data.quizz);
+                // };
+
+                // Ajouter le bouton au container
+                //container.appendChild(button);
+
+                ///////////////////////////////////:
+                //<div
+                //     class="relative bg-cover bg-center h-64"
+                //     style="background-image: url('')"
+                // >
+                //     <!-- Le titre avec un fond blanc centré -->
+                //     <div class="absolute inset-0 flex items-center justify-center">
+                //         <h1
+                //             class="bg-white px-6 py-3 text-2xl font-bold text-center text-black shadow-lg"
+                //         >
+                //             Mon Titre
+                //         </h1>
+                //     </div>
+                // </div>
+
+                //Creation de la div pour le quizz
+                const divQuizz = document.createElement("div");
+                // divQuizz.classList.add(
+                //     "relative",
+                //     "bg-cover",
+                //     "bg-center",
+                //     "max-w-xs",
+                //     "overflow-hidden",
+                //     "rounded",
+                //     "shadow-lg",
+                //     "transition",
+                //     "duration-300",
+                //     "ease-in-out",
+                //     "transform",
+                //     "hover:-translate-y-1",
+                //     "hover:scale-105",
+                //     "hover:shadow-2xl",
+                //     "cursor-pointer"
+                // );
+                divQuizz.classList.add(
+                    "relative",
+                    "bg-cover",
+                    "bg-center",
+                    "h-64",
+                    "rounded",
+                    "shadow-lg",
+                    "filter",
+                    "brightness-50",
+                    "transition",
+                    "duration-300",
+                    "ease-in-out",
+                    "transform",
+                    "hover:-translate-y-1",
+                    "hover:scale-105",
+                    "hover:shadow-2xl",
+                    "cursor-pointer"
+                );
+                divQuizz.style.backgroundImage =
+                    "url('https://images.unsplash.com/photo-1505706374141-cdc21fce2e03?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"; //`url(${data.image})`;
+
+                //Creation du titre du quizz
+                const divTitre = document.createElement("div");
+                divTitre.classList.add(
+                    "absolute",
+                    "inset-0",
+                    "flex",
+                    "items-center",
+                    "justify-center"
+                );
+
+                const titreQuizz = document.createElement("h1");
+                titreQuizz.classList.add(
+                    "px-6",
+                    "py-3",
+                    "text-1xl",
+                    "font-bold",
+                    "text-center",
+                    "text-white",
+                    "shadow-lg"
+                );
+                titreQuizz.textContent = data.quizz;
+                divTitre.appendChild(titreQuizz);
+                divQuizz.appendChild(divTitre);
+                divQuizz.onclick = () => {
+                    fetchQuizId(docId, data.quizz);
+                };
+
+                // Ajouter la div quizz au container
+                container.appendChild(divQuizz);
+            }
+        });
+    } catch (error) {
+        console.error(
+            "Erreur lors de la récupération des champs text :",
+            error
+        );
+    }
 }
 
 async function fetchQuizId(quizzValue, text) {
-  console.log(`fetchQuizId appelée avec l'ID : ${quizzValue}`);
-  quizzTheme = quizzValue;
-  document.getElementById("texteTheme").textContent = text;
-  document.getElementById("startQuizz").style.display = "block";
-  document.getElementById("theme").style.display = "none";
-
+    console.log(`fetchQuizId appelée avec l'ID : ${quizzValue}`);
+    quizzTheme = quizzValue;
+    document.getElementById("texteTheme").textContent = text;
+    document.getElementById("startQuizz").style.display = "block";
+    document.getElementById("theme").style.display = "none";
 }
 window.fetchQuizId = fetchQuizId;
 
 function loadQuestionAndAnswers() {
-  document.getElementById("startQuizz").style.display = "none";
-  document.getElementById("quizz").style.display = "block";
-  timeLeft = 1000;
+    document.getElementById("startQuizz").style.display = "none";
+    document.getElementById("quizz").style.display = "block";
+    timeLeft = 1000;
 
-  const docRef = doc(db, "quizz", quizzTheme);
+    const docRef = doc(db, "quizz", quizzTheme);
 
-  getDoc(docRef).then((docSnap) => {
-    if (docSnap.exists) {
-      const data = docSnap.data();
-      const questionData = data.questions[currentQuestion];
+    getDoc(docRef)
+        .then((docSnap) => {
+            if (docSnap.exists) {
+                const data = docSnap.data();
+                const questionData = data.questions[currentQuestion];
 
-      // Affiche la question dans le h2
-      const questionTextElement = document.getElementById("questionText");
-      questionTextElement.textContent = questionData.text;
+                // Affiche la question dans le h2
+                const questionTextElement =
+                    document.getElementById("questionText");
+                questionTextElement.textContent = questionData.text;
 
-      // Récupère le conteneur de réponses
-      const answersContainer = document.getElementById("answersContainer");
+                // Récupère le conteneur de réponses
+                const answersContainer =
+                    document.getElementById("answersContainer");
 
-      // Efface les réponses précédentes si nécessaire
-      answersContainer.innerHTML = "";
+                // Efface les réponses précédentes si nécessaire
+                answersContainer.innerHTML = "";
 
-      // Parcourt les réponses et crée un bouton pour chaque réponse
-      questionData.options.forEach((option, index) => {
-        const button = document.createElement("button");
-        button.textContent = option.text;
-        button.onclick = () => handleAnswerClick(option.istrue, index);
-        answersContainer.appendChild(button);
-      });
-      startTimer();
-    } else {
-      console.log("Le document n'existe pas !");
-    }
-  }).catch((error) => {
-    console.error("Erreur lors de la récupération du document:", error);
-  });
+                // Parcourt les réponses et crée un bouton pour chaque réponse
+                questionData.options.forEach((option, index) => {
+                    const button = document.createElement("button");
+                    button.textContent = option.text;
+                    button.onclick = () =>
+                        handleAnswerClick(option.istrue, index);
+                    answersContainer.appendChild(button);
+                });
+                startTimer();
+            } else {
+                console.log("Le document n'existe pas !");
+            }
+        })
+        .catch((error) => {
+            console.error("Erreur lors de la récupération du document:", error);
+        });
 }
 window.loadQuestionAndAnswers = loadQuestionAndAnswers;
-
 
 async function startTimer() {
     clearInterval(timerInterval); // Assurez-vous de nettoyer tout intervalle existant
@@ -124,12 +213,14 @@ async function updateTimer() {
     const hundredths = timeLeft % 10;
 
     // Formatage pour afficher les secondes et un chiffre pour dixièmes/centièmes
-    const formattedSeconds = seconds.toString().padStart(2, '0');
+    const formattedSeconds = seconds.toString().padStart(2, "0");
     const formattedTenths = tenths.toString();
     const formattedHundredths = hundredths.toString();
 
     // Affichage du temps dans l'élément HTML avec l'id "timer"
-    document.getElementById("timer").textContent = `${formattedSeconds}.${formattedTenths}${formattedHundredths}`;
+    document.getElementById(
+        "timer"
+    ).textContent = `${formattedSeconds}.${formattedTenths}${formattedHundredths}`;
 
     // Décrémenter le temps restant en centièmes de seconde
     timeLeft--;
