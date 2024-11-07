@@ -1157,3 +1157,35 @@ text-align: center;
 }
 }
 
+footer {
+  width: 100%;
+  /* background: black; */
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid black;
+  margin-top: 100px;
+}
+.logof img {
+  width: 200px;
+}
+
+.textFooter {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  column-gap: 50px;
+}
+.textFooter a {
+  color: white;
+}
+
+.textFooter a:hover {
+  color: #74b064;
+}

@@ -7,24 +7,25 @@
   <title>Page d'Accueil Écologique</title>
   <link rel="stylesheet" href="accueil.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 </head>
 
 <body>
-  <!-- nav -->
-  <header class="header">
-    <div class="gauche">
-      <li class="header__list">
-        <a class="header__link" href="#"><img class="logonav" src="imageSite/LOGOECO.png"></a>
-      </li>
+  <!-- Header -->
+  <header class="w-full bg-gray-100 text-white p-4 flex items-center justify-between">
+    <div class="gauche flex items-center">
+        <a href="#">
+            <img class="logonav w-12 h-auto" src="imageSite/LOGOECO.png" alt="Logo Eco">
+        </a>
     </div>
-    <div class="centre">
-      <a href="accueil.html">ACCUEIL</a>
-      <a href="quiz.html">QUIZ</a>
-      <a href="news.html">NEWS</a>
-      </a>
-    </div>
-    <div class="droite">
-      <ul class="header__nav">
+
+    <nav class="centre flex space-x-6">
+        <a href="accueil.html">ACCUEIL</a>
+        <a href="../matchmaking.html">CHALLENGE</a>
+        <a href="../article.html">ARTICLES</a>
+    </nav>
+
+    <ul class="droite flex space-x-4">
         <li class="header__list">
           <a class="header__link" href="">
             <img class="iconBlack" src="imageSite/icones/friend.png">
@@ -53,11 +54,11 @@
 
         <li class="header__list">
           <a class="header__link" href="#" id="friendButton">
-              <img class="iconBlack" src="imageSite/icones/profilfriends.png">
-              <img class="iconWhite" src="imageSite/icones/profilfriends.png">
+            <img class="iconBlack" src="imageSite/icones/profilfriends.png">
+            <img class="iconWhite" src="imageSite/icones/profilfriends.png">
           </a>
-      </li>
-      
+        </li>
+
 
         <!-- Friend Panel Widget Overlay -->
         <div id="friendPanelWidget" class="friend-panel-widget" style="display: none;">
@@ -134,18 +135,21 @@
 
   <div id="result" class="result-section">
     <h2 id="score">Votre Score Écologique: </h2>
-    <p>Quiz Écologiques</p>
   </div>
-
-  <div class="quiz-section">
-    <div class="quiz-bubbles">
-      <div class="quiz-bubble">Quiz 1</div>
-      <div class="quiz-bubble">Quiz 2</div>
-      <div class="quiz-bubble">Quiz 3</div>
-      <div class="quiz-bubble">Quiz 4</div>
-      <div class="quiz-bubble">Quiz 5</div>
+  <footer class="w-full bg-gray-800 text-white p-6 text-center mt-12">
+    <div class="flex justify-center mb-4">
+      <img src="imageSite/LOGOECO.png" alt="Logo Eco" class="w-12 h-auto">
     </div>
-  </div>
+    <div class="textFooter flex justify-center space-x-6 mb-4">
+      <nav class="centre flex space-x-6">
+        <a href="accueil.html">ACCUEIL</a>
+        <a href="../matchmaking.html">CHALLENGE</a>
+        <a href="../article.html">ARTICLES</a>
+      </nav>
+    </div>
+    <p>MADE BY VERDIA - ©2024</p>
+  </footer>
+
 
   <script src="accueil.js" type="module"></script>
   <script src="script.js"></script>
