@@ -41,13 +41,16 @@ export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth();
 
+
+
 // Gestion de la connexion avec email
 async function loginWithEmail() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const email = document.getElementById("emaillog").value;
+    const password = document.getElementById("passwordlog").value;
     try {
         console.log(auth + " " + email + " " + password);
         await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "accueil.html";
     } catch (error) {
         console.error("Erreur de connexion : ", error.message);
         document.getElementById("connectionMessage").innerHTML =
@@ -58,10 +61,11 @@ window.loginWithEmail = loginWithEmail; // Rendre la fonction accessible globale
 
 // Inscription avec email
 async function signUpWithEmail() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const email = document.getElementById("emailsign").value;
+    const password = document.getElementById("passwordsign").value;
     try {
         await createUserWithEmailAndPassword(auth, email, password);
+        window.location.href = "accueil.html";
     } catch (error) {
         console.error("Erreur d'inscription : ", error.message);
         switch (error.message) {
@@ -94,6 +98,7 @@ async function loginWithGoogle() {
     const provider = new GoogleAuthProvider();
     try {
         await signInWithPopup(auth, provider);
+        window.location.href = "accueil.html";
     } catch (error) {
         console.error("Erreur Google : ", error.message);
     }
@@ -130,6 +135,7 @@ if (htmlNamePage == "auth-page.html") {
             document.getElementById("chat").classList.add("active");
             //Si user est connecté, création du document utilisateur
             AddUserToDatabase(user);
+            window.location.href = "accueil.html";
         } else {
             document.getElementById("login").classList.add("active");
             document.getElementById("chat").classList.remove("active");

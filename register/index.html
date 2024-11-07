@@ -1,68 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login-mydream</title>
-    <link rel="stylesheet" href="co.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat en Temps Réel</title>
+    <link rel="stylesheet" href="co.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 </head>
 <body>
-
 <div class="container" id="container">
+    <!-- Zone d'inscription -->
     <div class="form-container sign-up-container" id="signUpForm">
         <form method="post">
             <div class="Allformlogin">
                 <h1>S'inscrire</h1>
-                <input type="text" class="inputLog" name="nom" required placeholder="Pseudo">
-                <input type="email" class="inputLog" name="email" required placeholder="Adresse mail">
-                <input type="password" class="inputLog" name="motdepasse" required placeholder="Mot de passe">
-                <input type="password" class="inputLog" name="confirm_motdepasse" required placeholder="Confirmer le mot de passe">
+                <input type="text" class="inputLog" name="nom" placeholder="Pseudo" required />
+                <input type="email" class="inputLog" name="email" placeholder="Adresse mail" id="emailsign" required />
+                <input type="password" class="inputLog" name="motdepasse" placeholder="Mot de passe" id="passwordsign" required />
+                <input type="password" class="inputLog" name="confirm_motdepasse" placeholder="Confirmer le mot de passe" required />
                 <a class="btnresponsiveid" href="#" onclick="showSignIn()">S'identifier ?</a>
-                <input type="submit" class="btnlogin" name="envoyer" value="S'enregistrer">
-                <img class="imgGoogle" src="imageSite/google.png" alt="">
+                <button type="button" class="btnlogin" onclick="signUpWithEmail()">S'enregistrer</button>
+                <img class="imgGoogle" src="imageSite/google.png" alt="" onclick="loginWithGoogle()" />
             </div>
         </form>
     </div>
+
+    <!-- Zone de connexion -->
     <div class="form-container sign-in-container" id="signInForm">
         <form method="post">
             <div class="Allformlogin">
                 <h1>Se connecter</h1>
-                <input type="text" class="inputLog" name="nom" required placeholder="Pseudo">
-                <input type="password" class="inputLog" name="motdepasse" required placeholder="Mot de passe">
+                <input type="email" class="inputLog" name="email" placeholder="Adresse mail" id="emaillog" required />
+                <input type="password" class="inputLog" name="motdepasse" placeholder="Mot de passe" id="passwordlog" required />
                 <a href="#">mot de passe oublié ?</a>
                 <a class="btnresponsiveid" href="#" onclick="showSignUp()">S'inscrire ?</a>
-                <input type="submit" class="btnlogin" name="envoyer" value="Se connecter">
-                <img class="imgGoogle" src="imageSite/google.png" alt="">
+                <button type="button" class="btnlogin" onclick="loginWithEmail()">Se connecter</button>
+                <img class="imgGoogle" src="imageSite/google.png" alt="" onclick="loginWithGoogle()" />
             </div>
         </form>
     </div>
+
+    <!-- Overlay pour les panneaux de bienvenue -->
     <div class="overlay-container">
         <div class="overlay">
             <div class="overlay-panel overlay-left">
                 <img class="imglogoLogin" src="imageSite/LOGOECO.png" alt="">
                 <h1>Bienvenue à nouveau</h1>
                 <p>Pour rester en contact avec nous, veuillez vous connecter avec vos informations personnelles</p>
-                <button class="ghost" id="signIn">S'identifier</button>
+                <button class="ghost" onclick="showSignIn()">S'identifier</button>
             </div>
             <div class="overlay-panel overlay-right">
                 <img class="imglogoLogin" src="imageSite/LOGOECO.png" alt="">
                 <h1>Bonjour !</h1>
                 <p>Saisissez vos données personnelles et commencez à voyager avec nous</p>
-                <button class="ghost" id="signUp">S'inscrire</button>
+                <button class="ghost" onclick="showSignUp()">S'inscrire</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="back">
-    <a href="index.php"><img src="imageSite/icones/close.png" alt=""></a>
-</div>
-
-<div class="back2">
-    <a href="index.php"><img src="imageSite/icones/close.png" alt=""></a>
-</div>
-
+<!-- Scripts Firebase et logique de connexion -->
+<script type="module" src="script.js"></script>
+<script type="module" src="send-message.js"></script>
+<script type="module" src="../script.js"></script>
+<script type="module" src="refresh.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="co.js"></script>
 </body>
 </html>
