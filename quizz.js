@@ -31,6 +31,7 @@ let timeLeft = 1000;
 let score = 0;
 let timerInterval;
 let quizzTheme = null;
+let timerPopup;
 
 async function getAllTextFields() {
   const quizzCollection = collection(db, "quizz");
@@ -97,7 +98,7 @@ function loadQuestionAndAnswers() {
       questionData.options.forEach((option, index) => {
         const button = document.createElement("button");
         button.textContent = option.text;
-        button.onclick = () => handleAnswerClick(option.istrue, index);
+        button.onclick = () => handleAnswerClick(option.istrue);
         answersContainer.appendChild(button);
       });
       startTimer();
@@ -147,18 +148,57 @@ async function updateTimer() {
 }
 
 // Fonction pour gérer le clic sur une réponse
-async function handleAnswerClick(isTrue, index) {
+async function handleAnswerClick(isTrue) {
     const currentTimerValue = document.getElementById("timer").textContent;
-    alert(`Timer arrêté : ${currentTimerValue}`); // Afficher la valeur du timer
     document.querySelectorAll("button").forEach((button) => {
         button.disabled = true;
     });
     if (isTrue) {
-        score += Math.round(currentTimerValue * 100);
-        document.getElementById("score").textContent = score;
-        alert(`Bonne réponse !`);
+      score += Math.round(currentTimerValue * 100);
+      document.getElementById("score").textContent = score;
+      Swal.fire({
+        icon: "success",
+        html: "Vous avez gagné" + score + "points",
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: () => {
+          Swal.showLoading();
+          const timer = Swal.getPopup().querySelector("b");
+          timerPopup = setInterval(() => {
+            timer.textContent = `${Swal.getTimerLeft()}`;
+          }, 100);
+        },
+        willClose: () => {
+          clearInterval(timerPopup);
+        }
+      }).then((result) => {
+        /* Read more about handling dismissals below */
+        if (result.dismiss === Swal.DismissReason.timer) {
+          console.log("I was closed by the timer");
+        }
+      });
     } else {
-        alert(`Mauvaise réponse`);
+      Swal.fire({
+        icon: "error",
+        html: "Mauvaise réponse",
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: () => {
+          Swal.showLoading();
+          const timer = Swal.getPopup().querySelector("b");
+          timerPopup = setInterval(() => {
+            timer.textContent = `${Swal.getTimerLeft()}`;
+          }, 100);
+        },
+        willClose: () => {
+          clearInterval(timerPopup);
+        }
+      }).then((result) => {
+        /* Read more about handling dismissals below */
+        if (result.dismiss === Swal.DismissReason.timer) {
+          console.log("I was closed by the timer");
+        }
+      });
     }
 }
 
