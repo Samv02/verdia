@@ -1,158 +1,82 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Ma Page Web</title>
-    </head>
-    <body>
-        <main class="flex flex-column overflow-y-auto padding-shadow">
-            <h2 class="bold">Profile</h2>
-            <p class="pb-4">Update your profile informations.</p>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verdia</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
 
-            <div class="h-full flex flex-row-to-col gap-2">
-                <div class="w-full flex flex-column gap-2">
-                    <h3 class="bold">Update your informations</h3>
-                    <form
-                        action=""
-                        method="post"
-                        class="flex flex-column gap-2"
-                    >
-                        <div class="rounded-box flex flex-column gap-2">
-                            <div class="flex flex-column">
-                                <label for="mail" class="bold">Mail</label>
-                                <input
-                                    type="text"
-                                    autocomplete="off"
-                                    id="mail"
-                                    name="mail"
-                                    class="input-form"
-                                    placeholder=""
-                                    aria-label="Mail"
-                                />
-                            </div>
-                            <div class="flex flex-column">
-                                <label for="username" class="bold"
-                                    >Username</label
-                                >
-                                <input
-                                    type="text"
-                                    autocomplete="off"
-                                    id="username"
-                                    name="username"
-                                    class="input-form"
-                                    placeholder=""
-                                    aria-label="Username"
-                                />
-                            </div>
-                            <div class="flex flex-column">
-                                <label for="firstname" class="bold"
-                                    >Firstname</label
-                                >
-                                <input
-                                    type="text"
-                                    autocomplete="off"
-                                    id="firstname"
-                                    name="firstname"
-                                    class="input-form"
-                                    placeholder=""
-                                    aria-label="Firstname"
-                                />
-                            </div>
-                            <div class="flex flex-column">
-                                <label for="lastname" class="bold"
-                                    >Lastname</label
-                                >
-                                <input
-                                    type="text"
-                                    autocomplete="off"
-                                    id="lastname"
-                                    name="lastname"
-                                    class="input-form"
-                                    placeholder=""
-                                    aria-label="Lastname"
-                                />
-                            </div>
-                        </div>
-                        <div class="center">
-                            <button
-                                type="submit"
-                                name="updateInfo"
-                                class="submit-button"
-                                aria-label="Mettre à jour les informations"
-                            >
-                                Mettre à jour
-                            </button>
-                        </div>
-                    </form>
+<body class="relative min-h-screen flex items-center justify-center p-6 bg-gray-100">
+    <!-- Image de fond floutée et centrée -->
+    <div class="absolute inset-0 bg-cover bg-center blur-2xl opacity-75" style="background-image: url('back profils.webp'); background-size: cover;"></div>
+
+    <!-- Contenu principal -->
+    <main class="relative z-10 w-full max-w-5xl space-y-8 bg-opacity-90 rounded-xl p-8">
+        <h1 class="shadow-black text-3xl font-bold text-center text-gray-800 mb-6">Informations Personnelles</h1>
+
+        <!-- Section grise avec bannière et contenu -->
+        <div class="bg-gray-200 shadow-md rounded-xl overflow-hidden">
+            <!-- Bannière en haut de la div grise -->
+            <div class="w-full h-44 overflow-hidden">
+                <img src="banner.jpg" alt="Bannière" class="w-full h-full object-cover" />
+            </div>
+            <!-- Contenu dans la section grise -->
+            <div class="p-8 flex items-start space-x-8">
+                <!-- Photo de profil -->
+                <div class="flex flex-col items-center">
+                    <div class="w-44 h-44 bg-gray-300 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                        <img src="https://avatar.iran.liara.run/public" alt="Photo de profil" class="w-full h-full object-cover" />
+                    </div>
                 </div>
 
-                <div class="w-full flex flex-column gap-2">
-                    <h3 class="bold">Update your password</h3>
-                    <form
-                        action=""
-                        method="post"
-                        class="flex flex-column gap-2"
-                    >
-                        <div class="rounded-box flex flex-column gap-2">
-                            <div class="flex flex-column">
-                                <label for="password" class="bold"
-                                    >Password</label
-                                >
-                                <input
-                                    type="password"
-                                    name="password"
-                                    id="password"
-                                    placeholder="Password"
-                                    class="input-form"
-                                    aria-label="Password"
-                                />
-                            </div>
-                            <div class="flex flex-column">
-                                <label for="confirmPassword" class="bold"
-                                    >Confirm password</label
-                                >
-                                <input
-                                    type="password"
-                                    name="confirmPassword"
-                                    id="confirmPassword"
-                                    placeholder="Confirm password"
-                                    class="input-form"
-                                    aria-label="Confirm password"
-                                />
-                            </div>
-                        </div>
-                        <div class="center">
-                            <button
-                                type="submit"
-                                name="updatePassword"
-                                class="submit-button"
-                                aria-label="Mettre à jour le mot de passe"
-                            >
-                                Mettre à jour
-                            </button>
-                        </div>
-                    </form>
+                <!-- Informations Personnelles à droite de la photo de profil -->
+                <div class="flex-1">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Mise à jour des informations</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <input type="text" id="mail" name="mail" class="border border-gray-300 rounded-lg p-2" placeholder="exemple@mail.com" readonly />
+                        <input type="text" id="username" name="username" class="border border-gray-300 rounded-lg p-2" placeholder="Nom d'utilisateur" />
+                        <input type="text" id="firstname" name="firstname" class="border border-gray-300 rounded-lg p-2" placeholder="Prénom" />
+                        <input type="text" id="lastname" name="lastname" class="border border-gray-300 rounded-lg p-2" placeholder="Nom" />
+                    </div>
+
+                    <!-- Bouton Mettre à jour les informations, centré sous la section des informations -->
+                    <div class="mt-6 text-center">
+                        <button id="buttonUpdateInfos" type="button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg w-full sm:w-1/2">
+                            Mettre à jour les informations
+                        </button>
+                    </div>
                 </div>
             </div>
-        </main>
-        <!-- Firebase App (SDK) -->
-        <script
-            type="module"
-            src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"
-        ></script>
 
-        <!-- Firebase Auth SDK -->
-        <script
-            type="module"
-            src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js"
-        ></script>
+            <!-- Section Modifier le Mot de Passe, centrée dans la div grise avec des composants plus larges -->
+            <div class="p-8 mt-4 w-full max-w-3xl mx-auto">
+                <h3 class="text-2xl font-semibold text-gray-700 mb-6 text-center">Modifier le mot de passe</h3>
+                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 w-full">
+                    <input type="password" id="currentPassword" name="currentPassword" class="border border-gray-300 rounded-lg p-2 w-full sm:max-w-xs lg:max-w-md" placeholder="Mot de passe actuel" />
+                    <input type="password" id="password" name="password" class="border border-gray-300 rounded-lg p-2 w-full sm:max-w-xs lg:max-w-md" placeholder="Nouveau mot de passe" />
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="border border-gray-300 rounded-lg p-2 w-full sm:max-w-xs lg:max-w-md" placeholder="Confirmer le mot de passe" />
+                </div>
 
-        <!-- Firebase Firestore SDK (si besoin pour envoyer le message) -->
-        <script
-            type="module"
-            src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"
-        ></script>
-        <script type="module" src="profile.js"></script>
-    </body>
+                <!-- Bouton Modifier le mot de passe, plus large et centré -->
+                <div class="text-center mt-6 w-full">
+                    <button id="buttonUpdatePassword" type="button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg w-full sm:w-1/2">
+                        Modifier le mot de passe
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section badge-->
+            <div class="p-8 mt-4 w-full max-w-3xl mx-auto">
+                <h3 class="text-2xl font-semibold text-gray-700 mb-6 text-center">Badge obtenu</h3>
+                <div id="badgesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript Files -->
+    <script type="module" src="script.js"></script>
+    <script type="module" src="profile.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
 </html>

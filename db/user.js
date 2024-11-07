@@ -17,6 +17,7 @@ import {
     onSnapshot,
     doc,
     setDoc,
+    getDoc,
     updateDoc,
     Timestamp,
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -34,6 +35,28 @@ export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth();
 
+//GET
+export async function getUserDocument(userId) {
+    try {
+        // Référence au document de l'utilisateur
+        const userRef = doc(db, "users", userId);
+
+        // Récupération du document
+        const userSnap = await getDoc(userRef);
+
+        // Vérification de l'existence du document
+        if (userSnap.exists()) {
+            console.log("Le document 'user' existe !");
+            return userSnap.data();
+        } else {
+            console.log("Le document 'user' n'existe pas.");
+            return false;
+        }
+    } catch (error) {
+        console.error("Erreur lors de la vérification du document : ", error);
+        return false;
+    }
+}
 //CREATE
 // Fonction pour créer un document "user"
 // type User = {
@@ -50,22 +73,31 @@ export async function createUserDocument(user) {
         // Créez une référence au document "user" avec l'ID spécifié
         const userRef = doc(db, "users", user.id);
 
-        // Structure de données du document
-        const userData = {
-            date_creation: Timestamp.now(), // Code temporel
-            isadmin: false, // Booléen
-            nom: user.nom, // Chaîne (nom de l'utilisateur)
-            prenom: user.prenom, // Chaîne (prénom de l'utilisateur)
-            mail: user.mail,
-            score_carbone: 0, // Chiffre (score carbone)
-            score_energie: 0, // Chiffre (score énergie)
-            score_recyclage: 0, // Chiffre (score recyclage)
-            username: user.username, // Chaîne vide pour le nom d'utilisateur
-        };
+        // Check si un document user existe deja avec cet id
+        const isExistingUser = await getUserDocument(user.id);
 
-        // Enregistrement du document dans Firestore
-        await setDoc(userRef, userData);
-        console.log("Document 'user' créé avec succès !");
+        // Vérification de l'existence du document
+        if (isExistingUser) {
+            console.log("Le document 'user' existe, pas de création.");
+            return true;
+        } else {
+            // Structure de données du document
+            const userData = {
+                date_creation: Timestamp.now(), // Code temporel
+                isadmin: false, // Booléen
+                nom: user.nom, // Chaîne (nom de l'utilisateur)
+                prenom: user.prenom, // Chaîne (prénom de l'utilisateur)
+                mail: user.mail,
+                score_carbone: 0, // Chiffre (score carbone)
+                score_energie: 0, // Chiffre (score énergie)
+                score_recyclage: 0, // Chiffre (score recyclage)
+                username: user.username, // Chaîne vide pour le nom d'utilisateur
+            };
+
+            // Enregistrement du document dans Firestore
+            await setDoc(userRef, userData);
+            console.log("Document 'user' créé avec succès !");
+        }
     } catch (error) {
         console.error("Erreur lors de la création du document : ", error);
     }
@@ -83,8 +115,10 @@ export async function updateUserDocument(userId, updatedFields) {
         await updateDoc(userRef, updatedFields);
 
         console.log("Document 'user' mis à jour avec succès !");
+        return true;
     } catch (error) {
         console.error("Erreur lors de la mise à jour du document : ", error);
+        return false;
     }
 }
 //DELETE
