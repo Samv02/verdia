@@ -43,6 +43,13 @@ async function envoyerScores() {
     }
 }
 
+function calculerScoreEcologique(recyclage, carbone, energie) {
+    const totalMax = 100 + 100 + 100; // Supposons que chaque score a un maximum de 100
+    const scoreTotal = recyclage + carbone + energie;
+    const pourcentage = (scoreTotal / totalMax) * 100;
+    return Math.min(pourcentage, 100).toFixed(2); // Limiter à 100% et arrondir
+}
+
 document.getElementById("envoyerScoresButton").addEventListener("click", envoyerScores);
 
 // Show chat widget when clicking the "cht.png" button
