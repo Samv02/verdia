@@ -165,7 +165,16 @@
                 .addEventListener("click", function () {
                     const url = `quizz.html?id=${sessionId}`; // Crée l'URL avec le paramètre id
                     window.location.href = url;
+                    console.log("redirection to quizz" + sessionId);
                 });
+            document
+                .getElementById("startButton")
+                .addEventListener("click", function () {
+                    const url = `quizz.html?id=${sessionId}`; // Crée l'URL avec le paramètre id
+                    window.location.href = url;
+                    console.log("redirection to quizz:" + sessionId + "id");
+                });
+
             // Choix du matchmaking standard
             function selectMatchmaking() {
                 document.querySelector(".button-container").style.display =
@@ -279,6 +288,7 @@
                     // Si une session est trouvée, on récupère l'utilisateur 0 et on ajoute l'utilisateur 1
                     const sessionDoc = foundSession;
                     sessionId = sessionDoc.id;
+                    console.log(sessionId + "foundsession");
                     const sessionData = sessionDoc.data();
                     const users = sessionData.users;
 
@@ -293,7 +303,6 @@
                     // Suivre les changements pour afficher le profil de l'autre utilisateur
                     watchSessionChanges(sessionDoc.ref);
                 } else {
-                    console.log("creation");
                     // Créer une nouvelle session si aucune n'est trouvée
                     const newSessionDoc = await addDoc(sessionRef, {
                         date_creation: Date.now(),
@@ -302,8 +311,8 @@
                         score: [0, 0],
                         users: [userUID, null], // Crée une session avec un utilisateur à l'index 0 et un libre à l'index 1
                     });
-                    const sessionId = newSessionDoc.id;
-                    console.log(sessionId);
+                    sessionId = newSessionDoc.id;
+                    console.log(sessionId + "creation");
                     // Suivre les changements pour détecter l'arrivée d'un autre utilisateur
                     watchSessionChanges(newSessionDoc);
                 }
