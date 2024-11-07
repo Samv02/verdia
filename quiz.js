@@ -9,6 +9,7 @@ import {
     doc,
     getDoc,
     getDocs,
+    updateDoc,
     where
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
@@ -26,12 +27,23 @@ export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth();
 
+const urlParams = new URLSearchParams(window.location.search);
+let idsession = "329qpYO2dsxCq18PTSh6" //urlParams.get('session');
+let userid = null;
 let currentQuestion = 0;
-let timeLeft = 1000;
-let score = 0;
+let timeLeft = 100;
+let score = 10;
 let timerInterval;
 let quizzTheme = null;
 let timerPopup;
+let scoreFinal = 10;
+
+auth.onAuthStateChanged((user) => {
+  if (user) {
+      // L'utilisateur est connecté
+      userid = user.uid;
+  }
+});
 
 async function getAllTextFields() {
   const quizzCollection = collection(db, "quizz");
@@ -75,7 +87,7 @@ window.fetchQuizId = fetchQuizId;
 function loadQuestionAndAnswers() {
   document.getElementById("startQuizz").style.display = "none";
   document.getElementById("quizz").style.display = "block";
-  timeLeft = 1000;
+  timeLeft = 100;
 
   const docRef = doc(db, "quizz", quizzTheme);
 
@@ -84,24 +96,67 @@ function loadQuestionAndAnswers() {
       const data = docSnap.data();
       const questionData = data.questions[currentQuestion];
 
-      // Affiche la question dans le h2
-      const questionTextElement = document.getElementById("questionText");
-      questionTextElement.textContent = questionData.text;
+      if(questionData !== undefined) {
+        // Affiche la question dans le h2
+        const questionTextElement = document.getElementById("questionText");
+        questionTextElement.textContent = questionData.text;
 
-      // Récupère le conteneur de réponses
-      const answersContainer = document.getElementById("answersContainer");
+        // Récupère le conteneur de réponses
+        const answersContainer = document.getElementById("answersContainer");
 
-      // Efface les réponses précédentes si nécessaire
-      answersContainer.innerHTML = "";
+        // Efface les réponses précédentes si nécessaire
+        answersContainer.innerHTML = "";
 
-      // Parcourt les réponses et crée un bouton pour chaque réponse
-      questionData.options.forEach((option, index) => {
-        const button = document.createElement("button");
-        button.textContent = option.text;
-        button.onclick = () => handleAnswerClick(option.istrue);
-        answersContainer.appendChild(button);
-      });
-      startTimer();
+        // Parcourt les réponses et crée un bouton pour chaque réponse
+        questionData.options.forEach((option, index) => {
+          const button = document.createElement("button");
+          button.textContent = option.text;
+          button.onclick = () => handleAnswerClick(option.istrue);
+          answersContainer.appendChild(button);
+        });
+        startTimer();
+      } else {
+        console.log("Aucune question disponible!");
+        scoreFinal = parseFloat(document.getElementById("score").textContent);
+        console.log(userid);
+
+        const sessionDocRef = doc(db, "session", idsession);
+
+        getDoc(sessionDocRef).then((docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            let users = data.users; 
+            let scores = data.score; 
+            console.log(scoreFinal);
+
+            // Trouver l'indice de l'utilisateur dans le tableau `user`
+            console.log(users.indexOf(userid));
+            const userIndex = users.indexOf(userid);
+
+            if (userIndex !== -1) {
+              // Si l'utilisateur existe dans le tableau, on met à jour son score
+              scores[userIndex] = scoreFinal;
+
+              // Mettre à jour seulement le tableau `score` dans Firestore
+              updateDoc(sessionDocRef, {
+                score : scores
+              })
+              .then(() => {
+                window.location.href = `recap.html?session=${idsession}`;
+              })
+              .catch((error) => {
+                console.error("Erreur lors de la mise à jour du score:", error);
+              });
+            } else {
+              console.log("Utilisateur non trouvé dans le tableau.");
+            }
+          } else {
+            console.log("Le document de session n'existe pas !");
+          }
+        }).catch(error => {
+            console.error("Erreur lors de la mise à jour du score:", error);
+          });
+      }
     } else {
       console.log("Le document n'existe pas !");
     }
@@ -110,6 +165,51 @@ function loadQuestionAndAnswers() {
   });
 }
 window.loadQuestionAndAnswers = loadQuestionAndAnswers;
+
+async function test() {
+  
+  console.log("Aucune question disponible!");
+  scoreFinal = parseFloat(document.getElementById("score").textContent);
+  console.log(userid);
+
+  const sessionDocRef = doc(db, "session", idsession);
+
+  getDoc(sessionDocRef).then((docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      let users = data.users; 
+      let scores = data.score; 
+      console.log(scoreFinal);
+
+      // Trouver l'indice de l'utilisateur dans le tableau `user`
+      console.log(users.indexOf(userid));
+      const userIndex = users.indexOf(userid);
+
+      if (userIndex !== -1) {
+        // Si l'utilisateur existe dans le tableau, on met à jour son score
+        scores[userIndex] = scoreFinal;
+
+        // Mettre à jour seulement le tableau `score` dans Firestore
+        updateDoc(sessionDocRef, {
+          score : scores
+        })
+        .then(() => {
+          window.location.href = `recap.html?session=${idsession}`;
+        })
+        .catch((error) => {
+          console.error("Erreur lors de la mise à jour du score:", error);
+        });
+      } else {
+        console.log("Utilisateur non trouvé dans le tableau.");
+      }
+    } else {
+      console.log("Le document de session n'existe pas !");
+    }
+  }).catch(error => {
+      console.error("Erreur lors de la mise à jour du score:", error);
+    });
+}
+window.test = test;
 
 
 async function startTimer() {
