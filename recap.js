@@ -78,13 +78,13 @@ onAuthStateChanged(auth, (user) => {
                   console.log(user.uid);
                   
                   if (user.uid == gagnantId){
-                    let pUsername = document.createElement("h3");
+                    let pUsername = document.createElement("p");
                     pUsername.setAttribute("id", "gagnant");
                     pUsername.textContent = "Bravo à vous : " + username;
                     nomGagnant.appendChild(pUsername);
 
-                    let gagnant = document.createElement("h4");
-                    let perdant = document.createElement("h5");
+                    let gagnant = document.createElement("p");
+                    let perdant = document.createElement("p");
 
                     gagnant.setAttribute("id", "score_" + scoreGagnant);
                     gagnant.textContent = "Voici votre score : " + scoreGagnant;
@@ -96,12 +96,12 @@ onAuthStateChanged(auth, (user) => {
 
                   } else {
                     nomGagnant.textContent = "Vous avez perdu";
-                    let pUsername = document.createElement("h3");
+                    let pUsername = document.createElement("p");
                     pUsername.setAttribute("id", "gagnant");
                     nomGagnant.appendChild(pUsername);
 
-                    let gagnant = document.createElement("h4");
-                    let perdant = document.createElement("h5");
+                    let gagnant = document.createElement("p");
+                    let perdant = document.createElement("p");
                     
                     gagnant.setAttribute("id", "score_" + scoreGagnant);
                     gagnant.textContent = "Voici le score du gagnant : " + scoreGagnant;
