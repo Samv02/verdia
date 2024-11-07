@@ -42,51 +42,8 @@ async function getAllTextFields() {
             const docId = doc.id;
 
             if (data.quizz) {
-                //const button = document.createElement("button");
-                //button.innerText = data.quizz;
-
-                // Ajouter un événement onclick pour afficher l'ID du document dans la console
-                // button.onclick = () => {
-                //     fetchQuizId(docId, data.quizz);
-                // };
-
-                // Ajouter le bouton au container
-                //container.appendChild(button);
-
-                ///////////////////////////////////:
-                //<div
-                //     class="relative bg-cover bg-center h-64"
-                //     style="background-image: url('')"
-                // >
-                //     <!-- Le titre avec un fond blanc centré -->
-                //     <div class="absolute inset-0 flex items-center justify-center">
-                //         <h1
-                //             class="bg-white px-6 py-3 text-2xl font-bold text-center text-black shadow-lg"
-                //         >
-                //             Mon Titre
-                //         </h1>
-                //     </div>
-                // </div>
-
                 //Creation de la div pour le quizz
                 const divQuizz = document.createElement("div");
-                // divQuizz.classList.add(
-                //     "relative",
-                //     "bg-cover",
-                //     "bg-center",
-                //     "max-w-xs",
-                //     "overflow-hidden",
-                //     "rounded",
-                //     "shadow-lg",
-                //     "transition",
-                //     "duration-300",
-                //     "ease-in-out",
-                //     "transform",
-                //     "hover:-translate-y-1",
-                //     "hover:scale-105",
-                //     "hover:shadow-2xl",
-                //     "cursor-pointer"
-                // );
                 divQuizz.classList.add(
                     "relative",
                     "bg-cover",
@@ -120,14 +77,6 @@ async function getAllTextFields() {
                 divQuizz.appendChild(divImage);
                 //Creation du titre du quizz
                 const divTitre = document.createElement("div");
-                // divTitre.classList.add(
-                //     "absolute",
-                //     "inset-0",
-                //     "flex",
-                //     "items-center",
-                //     "justify-center",
-                //     "filter"
-                // );
                 divTitre.classList.add(
                     "px-6",
                     "py-4",
