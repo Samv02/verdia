@@ -48,23 +48,23 @@ export const getArticles = async () => {
     return articles;
 };
 
-export async function getAllThemes() {
-    const articlesCollection = collection(db, "articles"); // Remplacez "articles" par le nom de votre collection d'articles
-    const snapshot = await getDocs(articlesCollection);
+// export async function getAllThemes() {
+//     const articlesCollection = collection(db, "articles"); // Remplacez "articles" par le nom de votre collection d'articles
+//     const snapshot = await getDocs(articlesCollection);
 
-    // Utiliser un Set pour obtenir des thèmes uniques
-    const themes = new Set();
+//     // Utiliser un Set pour obtenir des thèmes uniques
+//     const themes = new Set();
 
-    snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.theme) {
-            themes.add(data.theme); // Ajoute le thème à l'ensemble (Set)
-        }
-    });
+//     snapshot.forEach((doc) => {
+//         const data = doc.data();
+//         if (data.theme) {
+//             themes.add(data.theme); // Ajoute le thème à l'ensemble (Set)
+//         }
+//     });
 
-    // Convertir l'ensemble en tableau
-    return Array.from(themes);
-}
+//     // Convertir l'ensemble en tableau
+//     return Array.from(themes);
+// }
 
 export async function getAllTheme() {
     try {
@@ -122,8 +122,10 @@ export async function insertArticle(article) {
             contenu: article.contenu,
             theme: article.theme,
             titre: article.titre,
+            image: article.image,
             createdAt: new Date(), // Ajoute un timestamp de création
         });
+        console.log(article.image);
 
         console.log("Article ajouté avec l'ID :", docRef.id);
         return docRef.id; // Retourne l'ID du document ajouté

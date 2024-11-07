@@ -19,7 +19,7 @@ import {
 import { app } from "./script.js";
 
 import {
-    getAllThemes,
+    //getAllThemes,
     getAllTheme,
     getAllArticleByTheme,
     insertArticle,
@@ -51,7 +51,8 @@ async function initThemesDiv() {
             "transform",
             "hover:-translate-y-1",
             "hover:scale-105",
-            "hover:shadow-2xl"
+            "hover:shadow-2xl",
+            "cursor-pointer"
         );
         const img = document.createElement("img");
         img.classList.add("w-full", "object-cover");
@@ -75,6 +76,15 @@ async function initThemesDiv() {
         //Ajout du listener sur la div
         div.addEventListener("click", function () {
             clickOnTheme(theme.nom);
+
+            //Met le bg en blanc pour tous les enfants
+            const allDiv = conteneur.querySelectorAll("div");
+            allDiv.forEach((div) => {
+                div.classList.remove("bg-green-200");
+            });
+            //Met le bg en vert pour le div cliqué
+            div.classList.add("bg-green-200");
+            conteneur.for;
         });
     });
 
@@ -102,21 +112,74 @@ async function clickOnTheme(theme) {
     articles.forEach((article) => {
         const articleConteneur = document.createElement("div");
         articleConteneur.classList.add(
+            "relative",
             "border",
             "border-black-300",
             "rounded",
             "p-6",
-            "mb-4"
+            "m-4"
         );
         articleConteneur.id = article.id;
+        const dateCreation = document.createElement("p");
+        dateCreation.classList.add(
+            "absolute",
+            "top-4",
+            "right-4",
+            "text-sm",
+            "font-bold",
+            "pb-4"
+        );
+
+        // Récupération de la date et de l'heure
+        const timestamp = article.createdAt;
+        // Conversion en millisecondes
+        const date = new Date(
+            timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
+        );
+        // Affiche la date et l'heure sous une forme lisible
+        console.log(date.toLocaleString()); // Exemple : "11/6/2024, 12:32:16 PM"
+
+        dateCreation.innerText =
+            "Le " +
+            date.toLocaleDateString() +
+            " à " +
+            date.toLocaleTimeString();
+        articleConteneur.appendChild(dateCreation);
         const titreArticle = document.createElement("h3");
-        titreArticle.classList.add("text-2xl", "font-bold");
+        titreArticle.classList.add("text-2xl", "font-bold", "pb-4");
         titreArticle.innerText = article.titre;
         articleConteneur.appendChild(titreArticle);
+        const divParagraphe = document.createElement("div");
+        divParagraphe.classList.add("space-y-4");
+        //divParagraphe.classList.add("flex", "items-center");
+        const imgArticle = document.createElement("img");
+        imgArticle.classList.add(
+            "float-right",
+            "w-72",
+            "h-auto",
+            "ml-4",
+            "mb-4",
+            "rounded-lg",
+            "shadow-lg"
+        );
+        imgArticle.src = article.image;
+        imgArticle.alt = article.titre;
         const paragrapheArticle = document.createElement("p");
+        paragrapheArticle.classList.add("text-base", "leading-relaxed");
         paragrapheArticle.innerText = article.contenu;
-        articleConteneur.appendChild(paragrapheArticle);
+        divParagraphe.appendChild(imgArticle);
+        divParagraphe.appendChild(paragrapheArticle);
+        articleConteneur.appendChild(divParagraphe);
+        //articleConteneur.appendChild(paragrapheArticle);
+        const separateur = document.createElement("hr");
+        separateur.classList.add(
+            "border-t-2",
+            "border-gray-300",
+            "w-3/4",
+            "mx-auto"
+        );
         conteneur.appendChild(articleConteneur);
+        conteneur.appendChild(separateur);
     });
 
     //Defiler vers la div de l'article
@@ -168,7 +231,8 @@ async function showInputPopup() {
             `<label for="swal-input-theme">Choisir un thème:</label>` +
             `<select id="swal-input-theme" class="w-3/4 p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">${optionDataList}</select>` +
             `<input id="swal-input-title" class="swal2-input w-3/4" placeholder="Titre">` +
-            `<textarea id="swal-input-content" class="swal2-textarea w-3/4" placeholder="Contenu" rows="4"></textarea>`,
+            `<textarea id="swal-input-content" class="swal2-textarea w-3/4" placeholder="Contenu" rows="4"></textarea>` +
+            `<input id="swal-input-image" class="swal2-input w-3/4" placeholder="Lien image">`,
         focusConfirm: false,
         showCancelButton: true,
         confirmButtonText: "Valider",
@@ -177,9 +241,10 @@ async function showInputPopup() {
             const theme = document.getElementById("swal-input-theme").value;
             const title = document.getElementById("swal-input-title").value;
             const content = document.getElementById("swal-input-content").value;
+            const image = document.getElementById("swal-input-image").value;
 
             // Validation : Vérifier que tous les champs sont remplis
-            if (!theme || !title || !content) {
+            if (!theme || !title || !content || !image) {
                 Swal.showValidationMessage(
                     `Tous les champs doivent être remplis`
                 );
@@ -187,7 +252,7 @@ async function showInputPopup() {
             }
 
             // Retourner les valeurs pour utilisation après la fermeture de la popup
-            return { content, theme, title };
+            return { content, theme, title, image };
         },
     });
 
@@ -197,7 +262,9 @@ async function showInputPopup() {
             contenu: formValues.content,
             theme: formValues.theme,
             titre: formValues.title,
+            image: formValues.image,
         };
+        console.log(formValues.image);
         if (insertArticle(article)) {
             Swal.fire({
                 icon: "success",
