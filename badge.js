@@ -9,6 +9,7 @@ import {
     doc,
     addDoc,
     Timestamp,
+    onSnapshot,
     getDocs,
     where
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -39,54 +40,143 @@ auth.onAuthStateChanged((user) => {
         console.log("Nom:", user.displayName);
         console.log("Email:", user.email);
         userid = user.uid;
-        console.log(userid);
 
-        GetBadge2();
+        startPeriodicCheck2(userid, intervalMs);
+        startPeriodicCheck3(userid, intervalMs);
     }
 });
 
-async function GetBadge2(){
-    const badgeId = 2;
-    const sessionRef = collection(db, "session");
-
-  // Crée une requête pour rechercher les documents qui contiennent le userId dans le tableau "users"
-  const q = query(sessionRef, where("users", "array-contains", userid));
-
-  // Exécute la requête
-  const querySnapshot = await getDocs(q);
-
-  // Vérifie si au moins un document correspond
-  if (!querySnapshot.empty) {
-    console.log(`L'utilisateur ${userid} existe dans au moins une session.`);
-    addUserToObtentionCollection(userid, badgeId);
-    return true;
-  } else {
-    console.log("L'utilisateur n'existe dans aucune session.");
-    return false;
-  }
+function startPeriodicCheck2(userId, intervalMs) {
+    const intervalId = setInterval(() => {
+        GetBadge2(userId, intervalId);
+    }, intervalMs);
+    return intervalId;  // Retourne l'ID de l'intervalle pour un contrôle supplémentaire si nécessaire
 }
 
-async function addUserToObtentionCollection(userId, badgeId) {
+function startPeriodicCheck3(userId, intervalMs) {
+    const intervalId = setInterval(() => {
+        GetBadge3(userId, intervalId);
+    }, intervalMs);
+    return intervalId;  // Retourne l'ID de l'intervalle pour un contrôle supplémentaire si nécessaire
+}
+
+async function GetBadge2(userid, intervalId){
+    const badgeId = 2;
+    const sessionRef = collection(db, "session");
+    let userFound = false;
+
+    // Récupère tous les documents de la collection "session"
+    const querySnapshot = await getDocs(sessionRef);
+
+    // Filtrer pour trouver un document qui contient `userid` dans le mappage `users`
+
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data !== undefined) {
+            userFound = true;
+        }
+    });
+
+    if (userFound) {
+        const added = await ObtentionBadge(userid, badgeId);
+        
+        // Si le badge est déjà attribué, arrête la boucle
+        if (!added) {
+            clearInterval(intervalId);  // Arrête l'intervalle si le badge est déjà attribué
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
+
+async function GetBadge3(userid, intervalId){
+    const badgeId = 3;
+    const sessionRef = collection(db, "session");
+    let userFound = false;
+
+    // Crée une requête pour chercher les documents où "gagnant" est égal à `userId`
+    const q = query(sessionRef, where("gagnant", "==", userid));
+
+    // Exécute la requête
+    const querySnapshot = await getDocs(q);
+
+    // Vérifie si au moins un document correspond
+    if (!querySnapshot.empty) {
+        userFound = true;
+    } 
+    if (userFound) {
+        const added = await ObtentionBadge(userid, badgeId);
+        
+        // Si le badge est déjà attribué, arrête la boucle
+        if (!added) {
+            clearInterval(intervalId);  // Arrête l'intervalle si le badge est déjà attribué
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
+
+async function ObtentionBadge(userId, badgeId) {
     const obtentionRef = collection(db, "obtention");
+    const badgeRef = collection(db, "badge");  // Référence à la collection "badge"
   
+    // Crée une requête pour vérifier si un document existe avec le même userId et badgeId
+    const qObtention = query(obtentionRef, where("user_Uid", "==", userId), where("badge_Uid", "==", badgeId));
+    const queryObtention = await getDocs(qObtention);
+
+    const qBadge = query(badgeRef, where("badgeId", "==", badgeId));  // Cherche un badge avec cet ID
+    const queryBadge = await getDocs(qBadge);
+
+    let badgeData = null;  // Déclare badgeData ici
+
+    if (!queryBadge.empty) {
+        // Si un badge est trouvé, on prend le premier (supposons qu'il y a un seul document pour chaque badge)
+        const badgeDoc = querySnapshot.docs[0];
+        badgeData = badgeDoc.data();
+    }
+  
+    // Vérifie si le document existe déjà
+    if (!queryObtention.empty) {
+        return false;  // Indique que l'ajout n'a pas été fait car le document existe déjà
+    }
+  
+    // Si aucun document correspondant n'est trouvé, on peut ajouter un nouveau document
     const newDocData = {
-      badge_Uid: badgeId,  // Utiliser l'ID du document de session comme badge_Uid
-      date_obtention: Timestamp.now(),  // Timestamp actuel
+      badge_Uid: badgeId,
+      date_obtention: Timestamp.now(),
       user_Uid: userId
     };
   
-    try {
-      await addDoc(obtentionRef, newDocData);
-      console.log(`Document ajouté`);
-    } catch (error) {
-      console.error("Erreur lors de l'ajout du document dans 'obtention' :", error);
-    }
-  }
-
-/*function startPeriodicCheck(userId, intervalMs) {
-    return setInterval(() => {
-        GetBadge2(userId);
-    }, intervalMs);
+    // Ajoute le nouveau document dans la collection "obtention"
+    await addDoc(obtentionRef, newDocData);
+    console.log(badgeData)
+        Swal.fire({
+            position: "top-end",
+            title: "You have earned a badge!",
+            html: "badgeData.nom",  // Affiche le nom du badge dans la popup
+            showConfirmButton: false,
+            timer: 1500
+        });
+    return true;  // Indique que l'ajout a été fait avec succès
 }
 
-startPeriodicCheck(userId, intervalMs);*/
+//J'ai pas reussi a le faire fonctionner 
+/*async function GetBadge2(userid){
+    const badgeId = 2;
+    const sessionRef = collection(db, "session");
+
+    // Crée une requête pour rechercher les documents qui contiennent le userId dans le tableau "users"
+    const q = query(sessionRef, where("users", "array-contains","ghibefvufjekvhunjbfvduikhfvbifv"));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        // Vérifie si au moins un document correspond
+        if (!querySnapshot.empty) {
+            console.log(`L'utilisateur ${userid} existe dans au moins une session.`);
+            ObtentionBadge(userid, badgeId);
+        } else {
+            console.log("L'utilisateur n'existe dans aucune session.");
+        }
+    });
+}*/
