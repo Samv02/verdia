@@ -159,19 +159,31 @@
             let userUID;
             let sessionId;
 
+            //Listener sur demarrer partie
+            document
+                .getElementById("startButtonPrivate")
+                .addEventListener("click", function () {
+                    const url = `quizz.html?id=${sessionId}`; // Crée l'URL avec le paramètre id
+                    window.location.href = url;
+                });
             // Choix du matchmaking standard
             function selectMatchmaking() {
                 document.querySelector(".button-container").style.display =
                     "none";
                 document.querySelector(".matchmaking-container").style.display =
                     "block";
-                findOrCreateSession("example_quizz");
+                // Crée un objet URLSearchParams avec les paramètres de l'URL actuelle
+                const params = new URLSearchParams(window.location.search);
+
+                // Récupère le paramètre "theme"
+                const theme = params.get("quizz");
+                findOrCreateSession(theme);
             }
 
             window.selectMatchmaking = selectMatchmaking;
 
             // Créer une partie privée
-            async function createPrivateSession() {
+            async function createPrivateSession(quizz) {
                 document.querySelector(".button-container").style.display =
                     "none";
                 document.querySelector(".private-container").style.display =
@@ -180,9 +192,9 @@
                 const newSessionDoc = await addDoc(collection(db, "session"), {
                     date_creation: Date.now(),
                     gagnant: "",
-                    quizz: "private",
+                    quizz: quizz,
                     score: [0, 0],
-                    users: { 0: userUID, 1: "privé" },
+                    users: [userUID, "privé"], // users est maintenant un tableau
                 });
 
                 sessionId = newSessionDoc.id;
@@ -203,8 +215,23 @@
                     sessionSnap.exists() &&
                     sessionSnap.data().users[1] === "privé"
                 ) {
-                    await updateDoc(sessionRef, { "users.1": userUID });
-                    sessionId = code;
+                    console.log("check");
+
+                    // Mise à jour de l'utilisateur 1 dans la session
+                    const sessionDoc = sessionSnap;
+                    const sessionId = code;
+                    const sessionData = sessionDoc.data();
+                    const users = sessionData.users;
+
+                    // Ajoute le nouvel utilisateur à l'index 1 du tableau users
+                    users[1] = userUID;
+
+                    // Mise à jour de la session avec les deux utilisateurs
+                    await updateDoc(sessionDoc.ref, {
+                        users: users,
+                    });
+                    //await updateDoc(sessionRef, { "users.1": userUID }); // Modification de l'utilisateur 1
+                    //sessionId = code;
 
                     document.querySelector(".button-container").style.display =
                         "none";
@@ -229,36 +256,54 @@
             window.joinPrivateSession = joinPrivateSession;
 
             async function findOrCreateSession(quizz) {
+                console.log(quizz + " quizz");
+                console.log(userUID + " userUID");
                 const sessionRef = collection(db, "session");
+
+                // Rechercher des sessions où l'index 1 est null
                 const sessionQuery = query(
                     sessionRef,
-                    where("quizz", "==", quizz),
-                    where("users.1", "==", null)
+                    where("quizz", "==", quizz)
                 );
                 const sessionSnapshot = await getDocs(sessionQuery);
 
-                if (!sessionSnapshot.empty) {
-                    const sessionDoc = sessionSnapshot.docs[0];
-                    sessionId = sessionDoc.id;
+                let foundSession = null;
+                sessionSnapshot.forEach((doc) => {
+                    const sessionData = doc.data();
+                    if (sessionData.users[1] === null) {
+                        foundSession = doc;
+                    }
+                });
 
-                    // Rejoindre la session
+                if (foundSession) {
+                    // Si une session est trouvée, on récupère l'utilisateur 0 et on ajoute l'utilisateur 1
+                    const sessionDoc = foundSession;
+                    sessionId = sessionDoc.id;
+                    const sessionData = sessionDoc.data();
+                    const users = sessionData.users;
+
+                    // Ajoute le nouvel utilisateur à l'index 1 du tableau users
+                    users[1] = userUID;
+
+                    // Mise à jour de la session avec les deux utilisateurs
                     await updateDoc(sessionDoc.ref, {
-                        "users.1": userUID,
+                        users: users,
                     });
 
                     // Suivre les changements pour afficher le profil de l'autre utilisateur
                     watchSessionChanges(sessionDoc.ref);
                 } else {
+                    console.log("creation");
                     // Créer une nouvelle session si aucune n'est trouvée
                     const newSessionDoc = await addDoc(sessionRef, {
                         date_creation: Date.now(),
                         gagnant: "",
                         quizz: quizz,
                         score: [0, 0],
-                        users: { 0: userUID, 1: null },
+                        users: [userUID, null], // Crée une session avec un utilisateur à l'index 0 et un libre à l'index 1
                     });
-                    sessionId = newSessionDoc.id;
-
+                    const sessionId = newSessionDoc.id;
+                    console.log(sessionId);
                     // Suivre les changements pour détecter l'arrivée d'un autre utilisateur
                     watchSessionChanges(newSessionDoc);
                 }
