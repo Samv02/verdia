@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matchmaking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 2rem;
+    }
+    .button-container, .matchmaking-container, .private-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 50px;
+    }
+    .profile-picture, .loader {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: #ddd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      color: #555;
+    }
+    .loader {
+      border: 4px solid #ccc;
+      border-top: 4px solid #333;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .vs {
+      font-size: 2rem;
+      margin: 0 20px;
+    }
+    .matchmaking-option, #codeInput, #startButton, #copyButton {
+      margin-top: 15px;
+    }
+    #sessionCode {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Choisissez votre mode</h1>
+  <div class="button-container">
+    <button class="matchmaking-option" onclick="selectMatchmaking()">Matchmaking</button>
+    <button class="matchmaking-option" onclick="createPrivateSession()">Créer une partie privée</button>
+    <input type="text" id="codeInput" placeholder="Entrer le code de partie">
+    <button class="matchmaking-option" onclick="joinPrivateSession()">Rejoindre une partie privée</button>
+  </div>
+
+  <div class="matchmaking-container" style="display: none;">
+    <h1>Matchmaking en cours</h1>
+    <div class="matchmaking-container">
+      <div id="hostProfile" class="profile-picture"><img class="profile-picture" src="https://avatar.iran.liara.run/public"/></div>
+      <div class="vs">VS</div>
+      <div id="guestProfile" class="loader"></div>
+    </div>
+    <button id="startButton" style="display: none;">Démarrer</button>
+  </div>
+
+  <div class="private-container" style="display: none;">
+    <h1>Partie Privée</h1>
+    <div class="matchmaking-container">
+      <div id="hostProfilePrivate" class="profile-picture"><img class="profile-picture" src="https://avatar.iran.liara.run/public"/></div>
+      <div class="vs">VS</div>
+      <div id="guestProfilePrivate" class="loader"></div>
+    </div>
+    <div id="sessionCode"></div>
+    <button id="copyButton" onclick="copySessionCode()">Copier le code</button>
+    <button id="startButtonPrivate" style="display: none;">Démarrer</button>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, where, getDocs, onSnapshot, updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBSH-hvCVkKhhMrdtfnoqSZ0TZzjmPMulo",
+      authDomain: "verdia-4401d.firebaseapp.com",
+      projectId: "verdia-4401d",
+      storageBucket: "verdia-4401d.firebasestorage.app",
+      messagingSenderId: "639552213584",
+      appId: "1:639552213584:web:b1ede9db70fc1cceb63755"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+
+    let userUID;
+    let sessionId;
+
+    // Choix du matchmaking standard
+    function selectMatchmaking() {
+      document.querySelector(".button-container").style.display = "none";
+      document.querySelector(".matchmaking-container").style.display = "block";
+      findOrCreateSession("example_quizz");
+    }
+
+    window.selectMatchmaking = selectMatchmaking;
+
+    // Créer une partie privée
+    async function createPrivateSession() {
+      document.querySelector(".button-container").style.display = "none";
+      document.querySelector(".private-container").style.display = "block";
+      
+      const newSessionDoc = await addDoc(collection(db, "session"), {
+        date_creation: Date.now(),
+        gagnant: "",
+        quizz: "private",
+        score:  [0 = 0, 1 = 0],
+        users:  [ 0 = userUID, 1 = "privé" ]
+      });
+      
+      sessionId = newSessionDoc.id;
+      document.getElementById("sessionCode").innerText = `Code de session: ${sessionId}`;
+      watchSessionChanges(newSessionDoc, "private");
+    }
+    window.createPrivateSession  = createPrivateSession;
+
+    // Rejoindre une partie privée via code
+    async function joinPrivateSession() {
+      const code = document.getElementById("codeInput").value;
+      const sessionRef = doc(db, "session", code);
+      const sessionSnap = await getDoc(sessionRef);
+
+      if (sessionSnap.exists() && sessionSnap.data().users[1] === "privé") {
+        await updateDoc(sessionRef, { "users.1": userUID });
+        sessionId = code;
+
+        document.querySelector(".button-container").style.display = "none";
+        document.querySelector(".private-container").style.display = "block";
+        document.getElementById("sessionCode").innerText = `Code de session: ${sessionId}`;
+        document.getElementById("guestProfilePrivate").classList.remove("loader");
+        document.getElementById("guestProfilePrivate").innerHTML = `<img src="https://avatar.iran.liara.run/public" alt="Guest Profile" style="width: 100px; height: 100px; border-radius: 50%;">`;
+        document.getElementById("startButtonPrivate").style.display = "block";
+      } else {
+        alert("Session privée introuvable ou déjà remplie !");
+      }
+    }
+    window.joinPrivateSession = joinPrivateSession;
+
+
+    async function findOrCreateSession(quizz) {
+      const sessionRef = collection(db, "session");
+      const sessionQuery = query(sessionRef, where("quizz", "==", quizz), where("users.1", "==", null));
+      const sessionSnapshot = await getDocs(sessionQuery);
+
+      if (!sessionSnapshot.empty) {
+        const sessionDoc = sessionSnapshot.docs[0];
+        sessionId = sessionDoc.id;
+
+        // Rejoindre la session
+        await updateDoc(sessionDoc.ref, {
+          "users.1": userUID
+        });
+        
+        // Suivre les changements pour afficher le profil de l'autre utilisateur
+        watchSessionChanges(sessionDoc.ref);
+      } else {
+        // Créer une nouvelle session si aucune n'est trouvée
+        const newSessionDoc = await addDoc(sessionRef, {
+          date_creation: Date.now(),
+          gagnant: "",
+          quizz: quizz,
+          score: [0 = 0, 1 = 0],
+          users: [ 0 = userUID, 0 = null ]
+        });
+        sessionId = newSessionDoc.id;
+
+        // Suivre les changements pour détecter l'arrivée d'un autre utilisateur
+        watchSessionChanges(newSessionDoc);
+      }
+    }
+
+    // Fonction pour surveiller les changements dans la session
+    function watchSessionChanges(sessionDocRef, mode) {
+      onSnapshot(sessionDocRef, (doc) => {
+        const sessionData = doc.data();
+        const guestProfile = mode === "private" ? "guestProfilePrivate" : "guestProfile";
+        const startButton = mode === "private" ? "startButtonPrivate" : "startButton";
+
+        if (sessionData.users[1] && sessionData.users[1] !== "privé") {
+          document.getElementById(guestProfile).classList.remove("loader");
+          document.getElementById(guestProfile).innerHTML = `<img src="https://avatar.iran.liara.run/public" alt="Guest Profile" style="width: 100px; height: 100px; border-radius: 50%;">`;
+          document.getElementById(startButton).style.display = "block";
+        }
+      });
+    }
+
+
+    // Copier le code de session
+    function copySessionCode() {
+      navigator.clipboard.writeText(sessionId).then(() => {
+        alert("Code de session copié !");
+      });
+    }
+    window.copySessionCode = copySessionCode;
+
+    // Authentification de l'utilisateur
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        userUID = user.uid;
+      } else {
+        console.error("Erreur d'authentification");
+      }
+    });
+
+    // Connexion anonyme pour simplifier
+    auth.signInAnonymously();
+  </script>
+</body>
+</html>
