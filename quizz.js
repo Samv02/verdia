@@ -115,7 +115,8 @@ async function getAllTextFields() {
                     "inset-0",
                     "flex",
                     "items-center",
-                    "justify-center"
+                    "justify-center",
+                    "filter"
                 );
 
                 const titreQuizz = document.createElement("h1");
