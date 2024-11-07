@@ -74,7 +74,7 @@
             <button class="matchmaking-option" onclick="selectMatchmaking()">
                 Matchmaking
             </button>
-            <button class="matchmaking-option" onclick="createPrivateSession()">
+            <button class="matchmaking-option" id="button-create-private">
                 Créer une partie privée
             </button>
             <input
@@ -191,22 +191,35 @@
 
             window.selectMatchmaking = selectMatchmaking;
 
+            document
+                .getElementById("button-create-private")
+                .addEventListener("click", function () {
+                    // Crée un objet URLSearchParams avec les paramètres de l'URL actuelle
+                    const params = new URLSearchParams(window.location.search);
+
+                    // Récupère le paramètre "theme"
+                    const quizz = params.get("quizz");
+                    createPrivateSession(quizz);
+                });
+
             // Créer une partie privée
             async function createPrivateSession(quizz) {
                 document.querySelector(".button-container").style.display =
                     "none";
                 document.querySelector(".private-container").style.display =
                     "block";
+                let newSessionDoc;
+                if (userUID) {
+                    newSessionDoc = await addDoc(collection(db, "session"), {
+                        date_creation: Date.now(),
+                        gagnant: "",
+                        quizz: quizz,
+                        score: [0, 0],
+                        users: [userUID, "privé"], // users est maintenant un tableau
+                    });
+                    sessionId = newSessionDoc.id;
+                }
 
-                const newSessionDoc = await addDoc(collection(db, "session"), {
-                    date_creation: Date.now(),
-                    gagnant: "",
-                    quizz: quizz,
-                    score: [0, 0],
-                    users: [userUID, "privé"], // users est maintenant un tableau
-                });
-
-                sessionId = newSessionDoc.id;
                 document.getElementById(
                     "sessionCode"
                 ).innerText = `Code de session: ${sessionId}`;
@@ -228,7 +241,8 @@
 
                     // Mise à jour de l'utilisateur 1 dans la session
                     const sessionDoc = sessionSnap;
-                    const sessionId = code;
+
+                    sessionId = code;
                     const sessionData = sessionDoc.data();
                     const users = sessionData.users;
 
