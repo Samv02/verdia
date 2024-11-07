@@ -1,12 +1,52 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <head>
+    <header class="header">
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link
             href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
             rel="stylesheet"
         />
+        <link rel="stylesheet" href="accueil.css">
+
+            <div class="gauche">
+              <li class="header__list">
+                <a class="header__link" href="#"><img class="logonav" src="imageSite/LOGOECO.png"></a>
+              </li>
+            </div>
+            <div class="centre">
+                <a href="accueil.html">ACCUEIL</a>
+                <a href="quiz.html">QUIZZ</a>
+                <a href="news.html">NEWS</a>
+              </a>
+            </div>
+            <div class="droite">
+              <ul class="header__nav">
+                <li class="header__list">
+                  <a class="header__link" href="login.php">
+                    <img class="iconBlack" src="imageSite/icones/friend.png">
+                    <img class="iconWhite" src="imageSite/icones/friend.png">
+                  </a>
+                </li>
+        
+                <li class="header__list">
+                    <a class="header__link" href="login.php">
+                      <img class="iconBlack" src="imageSite/icones/cht.png">
+                      <img class="iconWhite" src="imageSite/icones/cht.png">
+                    </a>
+                  </li>
+              
+                  <li class="header__list">
+                    <a class="header__link" href="login.php">
+                      <img class="iconBlack" src="imageSite/icones/profilfriends.png">
+                      <img class="iconWhite" src="imageSite/icones/profilfriends.png">
+                    </a>
+                  </li>
+                
+              </ul>
+            </div>
+            
+          </header>
         <!-- <style>
             /* Afficher uniquement le bloc 1 par défaut */
             .content-block {
@@ -16,7 +56,6 @@
                 display: block;
             }
         </style> -->
-    </head>
     <body class="flex items-center justify-center">
         <main class="w-3/4">
             <div id="theme" class="w-full h-full">
