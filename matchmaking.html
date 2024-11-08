@@ -213,10 +213,13 @@
 
                     if (docSnap.exists()) {
                         // Récupérer la valeur du champ `isReady`
-                        const isReady = docSnap.data().isReady;
-
-                        console.log("isReady:", isReady);
-                        return isReady;
+                        const isReadyP1 = docSnap.data().isReadyP1;
+                        const isReadyP2 = docSnap.data().isReadyP2;
+                        if (isReadyP1 && isReadyP2) {
+                            return true;
+                        }
+                        console.log("isReady:", isReadyP1, isReadyP2);
+                        //return isReady;
                     } else {
                         console.log("Document non trouvé.");
                         return null;
@@ -230,12 +233,56 @@
                 }
             }
 
+            // Fonction pour vérifier si l'utilisateur est dans la 2e position du tableau 'users'
+            async function isUserInSecondPosition(sessionId, userUID) {
+                try {
+                    // Référence au document 'session' avec l'ID donné
+                    const sessionRef = doc(db, "session", sessionId);
+                    const sessionSnap = await getDoc(sessionRef);
+
+                    if (sessionSnap.exists()) {
+                        const sessionData = sessionSnap.data();
+
+                        // Vérifie que le tableau 'users' a au moins deux éléments
+                        if (
+                            sessionData.users &&
+                            sessionData.users.length >= 2
+                        ) {
+                            // Vérifie si l'UID de l'utilisateur correspond à celui dans la 2e case (index 1)
+                            return sessionData.users[1] === userUID;
+                        } else {
+                            console.log(
+                                "Le tableau 'users' ne contient pas deux éléments."
+                            );
+                            return false;
+                        }
+                    } else {
+                        console.log("Le document de session n'existe pas.");
+                        return false;
+                    }
+                } catch (error) {
+                    console.error(
+                        "Erreur lors de la vérification de l'UID dans la 2e position :",
+                        error
+                    );
+                    return false;
+                }
+            }
+
             //Listener sur demarrer partie
             document
                 .getElementById("startButtonPrivate")
                 .addEventListener("click", async function () {
                     quizzId = await getQuizIdByName(quizz);
                     console.log(quizzId + " : " + quizz);
+                    //Si c'est le joueur 2, on update a ready
+                    let isUser2 = await isUserInSecondPosition(
+                        sessionId,
+                        userUID
+                    );
+                    if (isUser2) {
+                        updateIsReady(sessionId, "p2", true);
+                    }
                     let isReady = false;
                     Swal.fire({
                         title: "Veuillez patienter",
@@ -264,6 +311,14 @@
                 .addEventListener("click", async function () {
                     quizzId = await getQuizIdByName(quizz);
                     console.log(quizzId + " : " + quizz);
+                    //Si c'est le joueur 2, on update a ready
+                    let isUser2 = await isUserInSecondPosition(
+                        sessionId,
+                        userUID
+                    );
+                    if (isUser2) {
+                        updateIsReady(sessionId, "p2", true);
+                    }
                     let isReady = false;
                     Swal.fire({
                         title: "Veuillez patienter",
@@ -330,7 +385,8 @@
                         quizz: quizz,
                         score: [0, 0],
                         users: [userUID, "privé"], // users est maintenant un tableau
-                        isReady: false,
+                        isReadyP1: true,
+                        isReadyP2: false,
                     });
                     sessionId = newSessionDoc.id;
                 }
@@ -402,12 +458,40 @@
                     document.getElementById(
                         "startButtonPrivate"
                     ).style.display = "block";
+                    updateIsReady(sessionId, "p1", true);
                 } else {
                     alert("Session privée introuvable ou déjà remplie !");
                 }
             }
             window.joinPrivateSession = joinPrivateSession;
 
+            // Fonction pour mettre à jour le champ 'isReady'
+            async function updateIsReady(sessionId, player, isReadyValue) {
+                try {
+                    // Référence du document à mettre à jour dans la collection "session"
+                    const sessionRef = doc(db, "session", sessionId);
+
+                    if (player == "p1") {
+                        await updateDoc(sessionRef, {
+                            isReadyP1: isReadyValue,
+                        });
+                    } else {
+                        await updateDoc(sessionRef, {
+                            isReadyP2: isReadyValue,
+                        });
+                    }
+                    // Mise à jour du champ 'isReady' dans le document
+
+                    console.log(
+                        "Le champ isReady a été mis à jour avec succès."
+                    );
+                } catch (error) {
+                    console.error(
+                        "Erreur lors de la mise à jour du champ isReady :",
+                        error
+                    );
+                }
+            }
             async function findOrCreateSession(quizz) {
                 console.log(quizz + " quizz");
                 console.log(userUID + " userUID");
@@ -454,6 +538,8 @@
                         quizz: quizz,
                         score: [0, 0],
                         users: [userUID, null], // Crée une session avec un utilisateur à l'index 0 et un libre à l'index 1
+                        isReadyP1: true,
+                        isReadyP2: false,
                     });
                     sessionId = newSessionDoc.id;
                     console.log(sessionId + "creation");
