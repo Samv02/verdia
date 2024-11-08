@@ -149,6 +149,32 @@ async function chargerTotalUtilisateurs() {
 }
 
 
+document.getElementById("envoyerScoresButton").addEventListener("click", envoyerScores);
+
+// Show chat widget when clicking the "cht.png" button
+document.getElementById("chatButton").addEventListener("click", function (event) {
+    event.preventDefault();
+    document.getElementById("chatWidget").style.display = "block";
+});
+
+// Close chat widget when clicking the close button
+document.getElementById("closeChatWidget").addEventListener("click", function () {
+    document.getElementById("chatWidget").style.display = "none";
+});
+// Show friend panel widget when clicking the "profilfriends.png" button
+document.getElementById("friendButton").addEventListener("click", function (event) {
+    event.preventDefault();
+    document.getElementById("friendPanelWidget").style.display = "block";
+});
+
+// Close friend panel widget when clicking the close button
+document.getElementById("closeFriendPanel").addEventListener("click", function () {
+    document.getElementById("friendPanelWidget").style.display = "none";
+});
+
+// Charger les données initiales au chargement de la page
+window.addEventListener("DOMContentLoaded", chargerDonnees);
+document.getElementById("envoyerScoresButton").addEventListener("click", envoyerScores);
 
 // Charger les données initiales au chargement de la page
 window.addEventListener("DOMContentLoaded", chargerDonnees);
