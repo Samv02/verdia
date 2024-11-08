@@ -31,12 +31,12 @@ const urlParams = new URLSearchParams(window.location.search);
 let idsession = urlParams.get("session"); //"329qpYO2dsxCq18PTSh6";
 let userid = null;
 let currentQuestion = 0;
-let timeLeft = 100;
-let score = 10;
+let timeLeft = 1000;
+let score = 0;
 let timerInterval;
 let quizzTheme = urlParams.get("quizz");
 let timerPopup;
-let scoreFinal = 10;
+let scoreFinal = 0;
 
 auth.onAuthStateChanged((user) => {
     if (user) {
@@ -91,7 +91,7 @@ function loadQuestionAndAnswers() {
     console.log(quizzTheme);
     // document.getElementById("startQuizz").style.display = "none";
     document.getElementById("quizz").style.display = "block";
-    timeLeft = 100;
+    timeLeft = 1000;
 
     const docRef = doc(db, "quizz", quizzTheme);
 
