@@ -3,11 +3,9 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth
 import {
     getFirestore,
     collection,
-    query,
     doc,
     getDoc,
     getDocs,
-    where,
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 export const firebaseConfig = {
@@ -31,7 +29,9 @@ let timerInterval;
 let quizzTheme = null;
 let timerPopup;
 
-//function here
+// Ajouter un tableau pour stocker l'historique des réponses
+let answerHistory = [];
+
 async function getAllTextFields() {
     const quizzCollection = collection(db, "quizz");
     const container = document.getElementById("buttonContainer");
@@ -44,7 +44,13 @@ async function getAllTextFields() {
             const docId = doc.id;
 
             if (data.quizz) {
-                //Creation de la div pour le quizz
+                // Conteneur gris pour le quiz
+                const quizContainer = document.createElement("div");
+                quizContainer.classList.add(
+                    "bg-gray-100", "p-4", "rounded-lg", "shadow-md", "mb-4"
+                );
+
+                // Div principale pour le quiz avec image de fond
                 const divQuizz = document.createElement("div");
                 divQuizz.classList.add(
                     "relative",
@@ -77,7 +83,7 @@ async function getAllTextFields() {
                 const encodedUrl = encodeURIComponent(linkImage);
                 divImage.style.backgroundImage = `url("${encodedUrl}")`;
                 divQuizz.appendChild(divImage);
-                //Creation du titre du quizz
+
                 const divTitre = document.createElement("div");
                 divTitre.classList.add(
                     "px-6",
@@ -104,32 +110,33 @@ async function getAllTextFields() {
                 divTitre.appendChild(titreQuizz);
                 divQuizz.appendChild(divTitre);
                 divQuizz.onclick = () => {
-                    console.log("redirect matchmaking");
                     const param = "quizz";
                     const value = data.quizz;
                     const url = `matchmaking.html?${param}=${encodeURIComponent(
                         value
                     )}`;
-                    window.location.href = url;
                     fetchQuizId(docId, data.quizz);
                 };
 
-                // Ajouter la div quizz au container
-                container.appendChild(divQuizz);
+                quizContainer.appendChild(divQuizz);
+                container.appendChild(quizContainer);
             }
         });
     } catch (error) {
-        console.error(
-            "Erreur lors de la récupération des champs text :",
-            error
-        );
+        console.error("Erreur lors de la récupération des champs text :", error);
     }
 }
 
 async function fetchQuizId(quizzValue, text) {
-    console.log(`fetchQuizId appelée avec l'ID : ${quizzValue}`);
     quizzTheme = quizzValue;
-    document.getElementById("texteTheme").textContent = text;
+    
+    // Affichage du thème
+    const themeTitle = document.getElementById("texteTheme");
+    themeTitle.textContent = text;
+    themeTitle.classList.add(
+        "text-2xl", "font-semibold", "text-gray-800", "mb-4", "bg-gray-100", "p-4", "rounded"
+    );
+
     document.getElementById("startQuizz").style.display = "block";
     document.getElementById("theme").style.display = "none";
 }
@@ -137,34 +144,74 @@ window.fetchQuizId = fetchQuizId;
 
 function loadQuestionAndAnswers() {
     document.getElementById("startQuizz").style.display = "none";
-    document.getElementById("quizz").style.display = "block";
+    document.getElementById("quizz").style.display = "flex";
+    document.getElementById("quizz").classList.add(
+        "flex",
+        "flex-col",
+        "items-center",
+        // "justify-center",
+        // "min-h-screen" // Centrer verticalement et horizontalement dans la page
+    );
     timeLeft = 1000;
 
     const docRef = doc(db, "quizz", quizzTheme);
 
     getDoc(docRef)
         .then((docSnap) => {
-            if (docSnap.exists) {
+            if (docSnap.exists()) {
                 const data = docSnap.data();
                 const questionData = data.questions[currentQuestion];
 
-                // Affiche la question dans le h2
-                const questionTextElement =
-                    document.getElementById("questionText");
+                const questionTextElement = document.getElementById("questionText");
                 questionTextElement.textContent = questionData.text;
 
-                // Récupère le conteneur de réponses
-                const answersContainer =
-                    document.getElementById("answersContainer");
+                // Centre la question et ajoute de l'espace en haut et en bas
+                questionTextElement.classList.add(
+                    "text-center",
+                    "my-8",
+                    "text-2xl",
+                    "font-semibold",
+                    "text-gray-800"
+                );
 
-                // Efface les réponses précédentes si nécessaire
+                const answersContainer = document.getElementById("answersContainer");
+
+                // Configure `answersContainer` pour être centré
                 answersContainer.innerHTML = "";
+                answersContainer.classList.add(
+                    "inline-grid",
+                    "grid-cols-2",
+                    "gap-4",
+                    "justify-center"
+                );
 
-                // Parcourt les réponses et crée un bouton pour chaque réponse
+                // Créez les boutons de réponse avec une taille agrandie
                 questionData.options.forEach((option, index) => {
                     const button = document.createElement("button");
                     button.textContent = option.text;
-                    button.onclick = () => handleAnswerClick(option.istrue);
+
+                    // Classes de style pour les boutons
+                    button.classList.add(
+                        "text-white",
+                        "rounded-lg",
+                        "flex",
+                        "items-center",
+                        "justify-center"
+                    );
+
+                    // Taille agrandie pour chaque bouton carré
+                    button.style.width = "150px";
+                    button.style.height = "150px";
+                    button.style.margin = "4px";
+
+                    // Couleurs différentes pour chaque bouton
+                    const colors = ["bg-yellow-500", "bg-red-500", "bg-blue-500", "bg-green-500"];
+                    button.classList.add(colors[index % colors.length]);
+
+                    // Effet de survol
+                    button.classList.add("hover:opacity-75");
+
+                    button.onclick = () => handleAnswerClick(option.istrue, option.text);
                     answersContainer.appendChild(button);
                 });
                 startTimer();
@@ -175,38 +222,30 @@ function loadQuestionAndAnswers() {
         .catch((error) => {
             console.error("Erreur lors de la récupération du document:", error);
         });
-}
+    }
+
 window.loadQuestionAndAnswers = loadQuestionAndAnswers;
 
-async function startTimer() {
-    clearInterval(timerInterval); // Assurez-vous de nettoyer tout intervalle existant
+function startTimer() {
+    clearInterval(timerInterval);
     timerInterval = setInterval(updateTimer, 10);
 }
 
-// Fonction pour mettre à jour le timer
-async function updateTimer() {
-    // Calcul les secondes, dixièmes et centièmes
+function updateTimer() {
     const seconds = Math.floor((timeLeft % 6000) / 100);
     const tenths = Math.floor((timeLeft % 100) / 10);
     const hundredths = timeLeft % 10;
 
-    // Formatage pour afficher les secondes et un chiffre pour dixièmes/centièmes
     const formattedSeconds = seconds.toString().padStart(2, "0");
     const formattedTenths = tenths.toString();
     const formattedHundredths = hundredths.toString();
 
-    // Affichage du temps dans l'élément HTML avec l'id "timer"
-    document.getElementById(
-        "timer"
-    ).textContent = `${formattedSeconds}.${formattedTenths}${formattedHundredths}`;
+    document.getElementById("timer").textContent = `${formattedSeconds}.${formattedTenths}${formattedHundredths}`;
 
-    // Décrémenter le temps restant en centièmes de seconde
     timeLeft--;
 
-    // Vérifier si le temps est écoulé
     if (timeLeft <= 0) {
         clearInterval(timerInterval);
-        // Passer à la question suivante
         currentQuestion++;
         document.querySelectorAll("button").forEach((button) => {
             button.disabled = false;
@@ -215,35 +254,22 @@ async function updateTimer() {
     }
 }
 
-// Fonction pour gérer le clic sur une réponse
-async function handleAnswerClick(isTrue) {
+async function handleAnswerClick(isTrue, answerText) {
     const currentTimerValue = document.getElementById("timer").textContent;
     document.querySelectorAll("button").forEach((button) => {
         button.disabled = true;
     });
+
     if (isTrue) {
-        score += Math.round(currentTimerValue * 100);
+        const pointsEarned = Math.round(currentTimerValue * 100);
+        score += pointsEarned;
         document.getElementById("score").textContent = score;
+        
         Swal.fire({
             icon: "success",
-            html: "Vous avez gagné" + score + "points",
+            html: `Correct! Vous avez gagné ${pointsEarned} points.`,
             timer: 3000,
             timerProgressBar: true,
-            didOpen: () => {
-                Swal.showLoading();
-                const timer = Swal.getPopup().querySelector("b");
-                timerPopup = setInterval(() => {
-                    timer.textContent = `${Swal.getTimerLeft()}`;
-                }, 100);
-            },
-            willClose: () => {
-                clearInterval(timerPopup);
-            },
-        }).then((result) => {
-            /* Read more about handling dismissals below */
-            if (result.dismiss === Swal.DismissReason.timer) {
-                console.log("I was closed by the timer");
-            }
         });
     } else {
         Swal.fire({
@@ -251,24 +277,54 @@ async function handleAnswerClick(isTrue) {
             html: "Mauvaise réponse",
             timer: 3000,
             timerProgressBar: true,
-            didOpen: () => {
-                Swal.showLoading();
-                const timer = Swal.getPopup().querySelector("b");
-                timerPopup = setInterval(() => {
-                    timer.textContent = `${Swal.getTimerLeft()}`;
-                }, 100);
-            },
-            willClose: () => {
-                clearInterval(timerPopup);
-            },
-        }).then((result) => {
-            /* Read more about handling dismissals below */
-            if (result.dismiss === Swal.DismissReason.timer) {
-                console.log("I was closed by the timer");
-            }
         });
     }
+
+    answerHistory.push({
+        question: document.getElementById("questionText").textContent,
+        answer: answerText,
+        correct: isTrue,
+    });
+
+    displayAnswerHistory();
+
+    currentQuestion++;
+    loadQuestionAndAnswers();
 }
+
+function displayAnswerHistory() {
+    const historyContainer = document.getElementById("historyContainer");
+    historyContainer.innerHTML = "";
+    answerHistory.forEach((entry, index) => {
+        const entryDiv = document.createElement("div");
+        entryDiv.classList.add(
+            "p-3",
+            "mb-2",
+            "rounded",
+            entry.correct ? "bg-green-200" : "bg-red-200"
+        );
+        entryDiv.innerHTML = `<strong>Question ${index + 1}:</strong> ${
+            entry.question
+        }<br><strong>Votre réponse:</strong> ${entry.answer}`;
+        historyContainer.appendChild(entryDiv);
+    });
+}
+window.handleAnswerClick = handleAnswerClick;
+
+// Stylisation du bouton "Commencer le quiz"
+const startButton = document.getElementById("startQuizz");
+startButton.classList.add(
+    "bg-grey-500",
+    "text-white",
+    "py-3",
+    "px-6",
+    "rounded-lg",
+    //"hover:bg-green-600",
+    "text-xl",
+    "font-semibold",
+    "mt-4",
+    "shadow-md"
+);
 
 //getAllTextFields();
 document.addEventListener("DOMContentLoaded", getAllTextFields);

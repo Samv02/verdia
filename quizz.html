@@ -1,99 +1,47 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <header class="header">
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link
-            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-            rel="stylesheet"
-        />
-        <link rel="stylesheet" href="accueil.css">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Choix de Thème du Quizz</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="accueil.css">
+</head>
 
-            <div class="gauche">
-              <li class="header__list">
-                <a class="header__link" href="#"><img class="logonav" src="imageSite/LOGOECO.png"></a>
-              </li>
-            </div>
-            <div class="centre">
-                <a href="accueil.html">ACCUEIL</a>
-                <a href="quiz.html">QUIZZ</a>
-                <a href="news.html">NEWS</a>
-              </a>
-            </div>
-            <div class="droite">
-              <ul class="header__nav">
-                <li class="header__list">
-                  <a class="header__link" href="login.php">
-                    <img class="iconBlack" src="imageSite/icones/friend.png">
-                    <img class="iconWhite" src="imageSite/icones/friend.png">
-                  </a>
-                </li>
-        
-                <li class="header__list">
-                    <a class="header__link" href="login.php">
-                      <img class="iconBlack" src="imageSite/icones/cht.png">
-                      <img class="iconWhite" src="imageSite/icones/cht.png">
-                    </a>
-                  </li>
-              
-                  <li class="header__list">
-                    <a class="header__link" href="login.php">
-                      <img class="iconBlack" src="imageSite/icones/profilfriends.png">
-                      <img class="iconWhite" src="imageSite/icones/profilfriends.png">
-                    </a>
-                  </li>
-                
-              </ul>
-            </div>
-            
-          </header>
-        <!-- <style>
-            /* Afficher uniquement le bloc 1 par défaut */
-            .content-block {
-                display: none;
-            }
-            #theme {
-                display: block;
-            }
-        </style> -->
-    <body class="flex items-center justify-center">
-        <main class="w-3/4">
-            <div id="theme" class="w-full h-full">
-                <h1>Choix du thème</h1>
-                <div
-                    id="buttonContainer"
-                    class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 border-2 border-black-300 rounded-lg p-4 w-full"
-                ></div>
-            </div>
+<body class="flex flex-col items-center justify-between bg-gray-50">
+    <!-- Main content -->
+    <main class="w-3/4 mt-8 flex flex-col items-center">
+        <!-- Thème de Quiz -->
+        <section id="theme" class="w-full">
+            <h1 class="text-2xl font-bold text-center mb-6">Choix du thème</h1>
+            <div id="buttonContainer" class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 border-2 border-gray-300 rounded-lg p-4 w-full"></div>
+        </section>
 
-            <div id="startQuizz" class="">
-                <div id="texteTheme">t</div>
-                <button id="start" onclick="loadQuestionAndAnswers()">
-                    commencer le quiz</button
-                ><br />
-            </div>
+        <!-- Bouton commencer le quiz -->
+        <div id="startQuizz" class="mt-8 hidden text-center">
+            <div id="texteTheme" class="text-lg font-semibold mb-4">Votre Thème Sélectionné</div>
+            <button id="start" onclick="loadQuestionAndAnswers()" class="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600">Commencer le quiz</button>
+        </div>
 
-            <div id="quizz" class="hidden">
-                <div id="timer">00:00</div>
-                <h2 id="questionText">Question affichée ici</h2>
-                <div id="answersContainer">Réponses affichées ici</div>
-                <div id="score">Score : 0</div>
-            </div>
-        </main>
-        <footer>
-            <div class="logof">
-              <img src="imageSite/LOGOECO.png" alt="">
-            </div>
-            <br>
-            <div class="textFooter">
-                <a href="accueil.html">ACCUEIL</a>
-                <a href="quiz.html">QUIZZ</a>
-                <a href="news.html">NEWS</a>
-            </div>
-            <br>
-            <p>MADE BY WAFD AGNECY - ©2024 - WAFDAGENCY@GMAIL.COM</p>
-          </footer>
-          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script type="module" src="quizz.js"></script>
-    </body>
+        <!-- Section Quizz -->
+        <section id="quizz" class="hidden mt-8 w-full flex justify-center">
+          <!-- Carte grise -->
+          <div class="bg-beige rounded-lg shadow-lg p-16 w-full max-w-4xl text-center">
+              <div id="timer" class="text-xl font-semibold mb-6">00:00</div>
+              <h2 id="questionText" class="text-lg font-bold mb-10">Question affichée ici</h2>
+              <div id="answersContainer" class="grid grid-cols-2 gap-6 justify-center mb-10">Réponses affichées ici</div>
+              <div id="score" class="text-lg font-bold mt-8">Score : 0</div>
+          </div>
+      </section>      
+    </main>
+  
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="quizz.js"></script>
+</body>
 </html>
+<style>
+  .bg-beige {
+    background-color: #F6F1EA; /* Couleur beige */
+  }
+</style>
