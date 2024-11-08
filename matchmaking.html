@@ -311,6 +311,14 @@
                 .addEventListener("click", async function () {
                     quizzId = await getQuizIdByName(quizz);
                     console.log(quizzId + " : " + quizz);
+                    //Si c'est le joueur 2, on update a ready
+                    let isUser2 = await isUserInSecondPosition(
+                        sessionId,
+                        userUID
+                    );
+                    if (isUser2) {
+                        updateIsReady(sessionId, "p2", true);
+                    }
                     let isReady = false;
                     Swal.fire({
                         title: "Veuillez patienter",
@@ -530,6 +538,8 @@
                         quizz: quizz,
                         score: [0, 0],
                         users: [userUID, null], // Crée une session avec un utilisateur à l'index 0 et un libre à l'index 1
+                        isReadyP1: true,
+                        isReadyP2: false,
                     });
                     sessionId = newSessionDoc.id;
                     console.log(sessionId + "creation");
