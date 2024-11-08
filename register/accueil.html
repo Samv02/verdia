@@ -14,77 +14,63 @@
   <!-- Header -->
   <header class="w-full bg-gray-100 text-white p-4 flex items-center justify-between">
     <div class="gauche flex items-center">
-        <a href="#">
-            <img class="logonav w-12 h-auto" src="imageSite/LOGOECO.png" alt="Logo Eco">
-        </a>
+      <a href="#">
+        <img class="logonav w-12 h-auto" src="imageSite/LOGOECO.png" alt="Logo Eco">
+      </a>
     </div>
 
     <nav class="centre flex space-x-6">
-        <a href="accueil.html">ACCUEIL</a>
-        <a href="../matchmaking.html">CHALLENGE</a>
-        <a href="../article.html">ARTICLES</a>
+      <a href="accueil.html">ACCUEIL</a>
+      <a href="../matchmaking.html">CHALLENGE</a>
+      <a href="../article.html">ARTICLES</a>
     </nav>
 
     <ul class="droite flex space-x-4">
-        <li class="header__list">
-          <a class="header__link" href="">
-            <img class="iconBlack" src="imageSite/icones/friend.png">
-            <img class="iconWhite" src="imageSite/icones/friend.png">
-          </a>
-        </li>
-        <li class="header__list">
-          <a class="header__link" href="#" id="chatButton">
-            <img class="iconBlack" src="imageSite/icones/cht.png">
-            <img class="iconWhite" src="imageSite/icones/cht.png">
-          </a>
-        </li>
+      <li class="header__list">
+        <a class="header__link" href="" id="logoutButton">
+          <img class="iconBlack" src="imageSite/icones/friend.png">
+          <img class="iconWhite" src="imageSite/icones/friend.png">
+        </a>
+      </li>
+      <li class="header__list">
+        <a class="header__link" href="#" id="chatButton">
+          <img class="iconBlack" src="imageSite/icones/cht.png">
+          <img class="iconWhite" src="imageSite/icones/cht.png">
+        </a>
+      </li>
 
-
-        <!-- Chat Widget Overlay -->
-        <div id="chatWidget" class="chat-widget" style="display: none;">
-          <div class="chat-widget-header">
-            <span>Chat</span>
-            <button id="closeChatWidget">✕</button>
-          </div>
-          <iframe src="../chat.html" id="chatIframe" frameborder="0"></iframe>
+      <!-- Chat Widget Overlay -->
+      <div id="chatWidget" class="chat-widget" style="display: none;">
+        <div class="chat-widget-header">
+          <span>Chat</span>
+          <button id="closeChatWidget">✕</button>
         </div>
+        <iframe src="../chat.html" id="chatIframe" frameborder="0"></iframe>
+      </div>
 
+      <li class="header__list">
+        <a class="header__link" href="#" id="friendButton">
+          <img class="iconBlack" src="imageSite/icones/profilfriends.png">
+          <img class="iconWhite" src="imageSite/icones/profilfriends.png">
+        </a>
+      </li>
 
-
-
-        <li class="header__list">
-          <a class="header__link" href="#" id="friendButton">
-            <img class="iconBlack" src="imageSite/icones/profilfriends.png">
-            <img class="iconWhite" src="imageSite/icones/profilfriends.png">
-          </a>
-        </li>
-
-
-        <!-- Friend Panel Widget Overlay -->
-        <div id="friendPanelWidget" class="friend-panel-widget" style="display: none;">
-          <div class="friend-panel-header">
-            <span>Amis</span>
-            <button id="closeFriendPanel">✕</button>
-          </div>
-          <iframe src="../friend-panel.html" id="friendIframe" frameborder="0"></iframe>
+      <!-- Friend Panel Widget Overlay -->
+      <div id="friendPanelWidget" class="friend-panel-widget" style="display: none;">
+        <div class="friend-panel-header">
+          <span>Amis</span>
+          <button id="closeFriendPanel">✕</button>
         </div>
-
-
-      </ul>
-    </div>
-
+        <iframe src="../friend-panel.html" id="friendIframe" frameborder="0"></iframe>
+      </div>
+    </ul>
   </header>
 
-  <!-- nav end -->
-
   <div class="container">
-
-
     <div class="input-section">
       <h1>VERDIA</h1>
       <p>DEFIS DU JOUR</p>
       <br>
-
 
       <label for="recyclage">Score Recyclage</label>
       <div class="formaccueil">
@@ -96,29 +82,24 @@
       <div class="formaccueil">
         <input type="number" id="carbone" placeholder="Score carbone">
         <img class="checkform" src="imageSite/icones/check_5610944.png" alt="">
-
       </div>
 
       <label for="energie">Score Énergie</label>
       <div class="formaccueil">
         <input type="number" id="energie" placeholder="Score énergie">
         <img class="checkform" src="imageSite/icones/check_5610944.png" alt="">
-
       </div>
       <br>
-
-
     </div>
-    <div class="input-section right">
 
-      <img class="camcam" src="imageSite/icones/camamber/camamberd4.png" alt="">
+    <div class="input-section right">
+      <img class="camcam" id="scoreImage" src="imageSite/icones/camamber/camamberd4.png" alt="">
 
       <div class="allblockscore">
         <div class="blockscore">
           <p>155k</p>
           <img src="imageSite/icones/Conteurdemondesurl'appli.png" alt="">
         </div>
-
         <div class="blockscore">
           <p>155k</p>
           <img src="imageSite/icones/scorequizz.png" alt="">
@@ -126,16 +107,13 @@
       </div>
 
       <button id="envoyerScoresButton">Envoyer les Scores</button>
-
-
     </div>
-
-
   </div>
 
   <div id="result" class="result-section">
     <h2 id="score">Votre Score Écologique: </h2>
   </div>
+
   <footer class="w-full bg-gray-800 text-white p-6 text-center mt-12">
     <div class="flex justify-center mb-4">
       <img src="imageSite/LOGOECO.png" alt="Logo Eco" class="w-12 h-auto">
@@ -150,10 +128,7 @@
     <p>MADE BY VERDIA - ©2024</p>
   </footer>
 
-
   <script src="accueil.js" type="module"></script>
   <script src="script.js"></script>
-
 </body>
-
 </html>
