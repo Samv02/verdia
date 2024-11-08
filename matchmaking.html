@@ -204,6 +204,31 @@
                     );
                 }
             }
+            // Fonction pour récupérer le champ `isReady` du document `session`
+            async function getIsReady(documentId) {
+                try {
+                    // Référence au document dans la collection "session"
+                    const docRef = doc(db, "session", documentId);
+                    const docSnap = await getDoc(docRef);
+
+                    if (docSnap.exists()) {
+                        // Récupérer la valeur du champ `isReady`
+                        const isReady = docSnap.data().isReady;
+
+                        console.log("isReady:", isReady);
+                        return isReady;
+                    } else {
+                        console.log("Document non trouvé.");
+                        return null;
+                    }
+                } catch (error) {
+                    console.error(
+                        "Erreur lors de la récupération du champ isReady :",
+                        error
+                    );
+                    return null;
+                }
+            }
 
             //Listener sur demarrer partie
             document
@@ -211,6 +236,25 @@
                 .addEventListener("click", async function () {
                     quizzId = await getQuizIdByName(quizz);
                     console.log(quizzId + " : " + quizz);
+                    let isReady = false;
+                    Swal.fire({
+                        title: "Veuillez patienter",
+                        text: "Chargement en cours...",
+                        allowOutsideClick: false, // Empêche la fermeture en cliquant en dehors de l'alerte
+                        didOpen: () => {
+                            Swal.showLoading(); // Montre le loader de SweetAlert
+                        },
+                    });
+                    while (!isReady) {
+                        isReady = await getIsReady(sessionId);
+                        console.log("isReady:", isReady);
+                        if (!isReady) {
+                            console.log("Waiting for isReady to be true");
+                            await new Promise((resolve) =>
+                                setTimeout(resolve, 1000)
+                            );
+                        }
+                    }
                     const url = `quiz.html?session=${sessionId}&quizz=${quizzId}`; // Crée l'URL avec le paramètre id
                     window.location.href = url;
                     console.log("redirection to quizz" + sessionId);
@@ -220,8 +264,27 @@
                 .addEventListener("click", async function () {
                     quizzId = await getQuizIdByName(quizz);
                     console.log(quizzId + " : " + quizz);
-
-                    const url = `quiz.html?session=${sessionId}&quizz=${quizzId}`; // Crée l'URL avec le paramètre id
+                    let isReady = false;
+                    Swal.fire({
+                        title: "Veuillez patienter",
+                        text: "Chargement en cours...",
+                        allowOutsideClick: false, // Empêche la fermeture en cliquant en dehors de l'alerte
+                        didOpen: () => {
+                            Swal.showLoading(); // Montre le loader de SweetAlert
+                        },
+                    });
+                    while (!isReady) {
+                        isReady = await getIsReady(sessionId);
+                        console.log("isReady:", isReady);
+                        if (!isReady) {
+                            console.log("Waiting for isReady to be true");
+                            await new Promise((resolve) =>
+                                setTimeout(resolve, 1000)
+                            );
+                        }
+                    }
+                    const url = `quiz.html?session=${sessionId}&quizz=${quizzId}`;
+                    // Crée l'URL avec le paramètre id
                     window.location.href = url;
                     console.log("redirection to quizz:" + sessionId + "id");
                 });
@@ -267,6 +330,7 @@
                         quizz: quizz,
                         score: [0, 0],
                         users: [userUID, "privé"], // users est maintenant un tableau
+                        isReady: false,
                     });
                     sessionId = newSessionDoc.id;
                 }

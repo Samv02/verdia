@@ -11,6 +11,7 @@ import {
     getDoc,
     getDocs,
     where,
+    updateDoc,
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 export const firebaseConfig = {
@@ -38,7 +39,7 @@ onAuthStateChanged(auth, (user) => {
         console.log(user.uid);
         let nomTheme = document.getElementById("nomTheme");
         let zoneQuestionsReponses =
-            document.getElementsByClassName("questionEtReponse")[0];
+            document.getElementById("questionEtReponse");
         let nomGagnant = document.getElementById("nomGagnant");
         let score = document.getElementById("score");
 
@@ -50,26 +51,54 @@ onAuthStateChanged(auth, (user) => {
         // Récupère le paramètre 'session'
         const idsession = urlParams.get("session");
 
+        // Fonction pour mettre à jour le champ "gagnant" d'un document
+        async function updateGagnant(documentId, newGagnant) {
+            try {
+                // Référence au document dans Firestore
+                const docRef = doc(db, "session", documentId); // Remplacez "session" par votre collection
+
+                // Met à jour le champ "gagnant"
+                await updateDoc(docRef, {
+                    gagnant: newGagnant,
+                });
+
+                console.log("Champ 'gagnant' mis à jour avec succès.");
+            } catch (error) {
+                console.error(
+                    "Erreur lors de la mise à jour du champ 'gagnant' :",
+                    error
+                );
+            }
+        }
         if (idsession) {
             const sessionDocRef = doc(db, "session", idsession);
+            //const docSnap = await getDoc(sessionDocRef);
 
             getDoc(sessionDocRef)
                 .then((docSnap) => {
                     if (docSnap.exists()) {
                         const quizzTheme = docSnap.data().quizz; // Récupère le champs quizz dans la session
-                        const gagnantId = docSnap.data().gagnant;
+                        let gagnantId = docSnap.data().gagnant;
                         const score_1 = docSnap.data().score[0];
                         const score_2 = docSnap.data().score[1];
                         var scoreGagnant = 0;
                         var scorePerdant = 0;
+                        const userId1 = docSnap.data().users[0];
+                        const userId2 = docSnap.data().users[1];
 
+                        console.log(gagnantId);
+                        gagnantId = true;
                         if (gagnantId) {
                             if (score_1 < score_2) {
                                 scoreGagnant = score_2;
                                 scorePerdant = score_1;
+                                updateGagnant(idsession, userId2);
+                                gagnantId = userId2;
                             } else {
                                 scoreGagnant = score_1;
                                 scorePerdant = score_2;
+                                updateGagnant(idsession, userId1);
+                                gagnantId = userId1;
                             }
                             const gagnantCollection = doc(
                                 db,
@@ -82,7 +111,9 @@ onAuthStateChanged(auth, (user) => {
                                         const userData = doc.data();
                                         const username = userData.username;
                                         console.log(user.uid);
-
+                                        console.log(
+                                            gagnantId + " : " + user.uid
+                                        );
                                         if (user.uid == gagnantId) {
                                             let pUsername =
                                                 document.createElement("p");
@@ -116,6 +147,7 @@ onAuthStateChanged(auth, (user) => {
                                                 "Voici le score de votre adversaire : " +
                                                 scorePerdant;
                                             score.appendChild(perdant);
+                                            console.log(perdant);
                                         } else {
                                             nomGagnant.textContent =
                                                 "Vous avez perdu";
@@ -140,6 +172,7 @@ onAuthStateChanged(auth, (user) => {
                                                 "Voici le score du gagnant : " +
                                                 scoreGagnant;
                                             score.appendChild(gagnant);
+                                            console.log(gagnant);
 
                                             perdant.setAttribute(
                                                 "id",
