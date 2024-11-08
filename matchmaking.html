@@ -4,6 +4,11 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Matchmaking</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -69,20 +74,30 @@
         </style>
     </head>
     <body>
-        <h1>Choisissez votre mode</h1>
+        <h1>Choisir le mode de jeu :</h1>
         <div class="button-container">
-            <button class="matchmaking-option" onclick="selectMatchmaking()">
+            <button
+                class="w-64 p-4 m-4 bg-green-500 text-white text-xl font-semibold rounded-lg transform transition-transform duration-200 hover:scale-105 hover:bg-green-600"
+                onclick="selectMatchmaking()"
+            >
                 Matchmaking
             </button>
-            <button class="matchmaking-option" onclick="createPrivateSession()">
+            <button
+                class="w-64 py-4 bg-green-500 text-white text-xl font-semibold rounded-lg transform transition-transform duration-200 hover:scale-105 hover:bg-green-600"
+                id="button-create-private"
+            >
                 Créer une partie privée
             </button>
             <input
                 type="text"
                 id="codeInput"
                 placeholder="Entrer le code de partie"
+                class="w-64 py-4 border-2 m-4 border-green-500 text-xl rounded-lg focus:outline-none focus:border-green-600 transition duration-200"
             />
-            <button class="matchmaking-option" onclick="joinPrivateSession()">
+            <button
+                class="w-64 py-4 bg-green-500 text-white text-xl font-semibold rounded-lg transform transition-transform duration-200 hover:scale-105 hover:bg-green-600"
+                onclick="joinPrivateSession()"
+            >
                 Rejoindre une partie privée
             </button>
         </div>
@@ -158,14 +173,122 @@
 
             let userUID;
             let sessionId;
+            let quizz;
+            let quizzId;
+
+            async function getQuizIdByName(quizName) {
+                try {
+                    // Référence à la collection "quizzes" (à remplacer par le nom de votre collection)
+                    const quizzRef = collection(db, "quizz");
+
+                    // Crée une requête pour trouver le document avec le nom du quiz
+                    const q = query(quizzRef, where("quizz", "==", quizName));
+
+                    // Exécute la requête
+                    const querySnapshot = await getDocs(q);
+
+                    // Vérifie si le quiz a été trouvé et retourne son ID
+                    if (!querySnapshot.empty) {
+                        const quizDoc = querySnapshot.docs[0]; // Prend le premier document correspondant
+                        const quizId = quizDoc.id;
+                        console.log("ID du quiz :", quizId);
+                        return quizId;
+                    } else {
+                        console.log("Quizz introuvable");
+                        return null;
+                    }
+                } catch (error) {
+                    console.error(
+                        "Erreur lors de la récupération de l'ID du quiz :",
+                        error
+                    );
+                }
+            }
+            // Fonction pour récupérer le champ `isReady` du document `session`
+            async function getIsReady(documentId) {
+                try {
+                    // Référence au document dans la collection "session"
+                    const docRef = doc(db, "session", documentId);
+                    const docSnap = await getDoc(docRef);
+
+                    if (docSnap.exists()) {
+                        // Récupérer la valeur du champ `isReady`
+                        const isReady = docSnap.data().isReady;
+
+                        console.log("isReady:", isReady);
+                        return isReady;
+                    } else {
+                        console.log("Document non trouvé.");
+                        return null;
+                    }
+                } catch (error) {
+                    console.error(
+                        "Erreur lors de la récupération du champ isReady :",
+                        error
+                    );
+                    return null;
+                }
+            }
 
             //Listener sur demarrer partie
             document
                 .getElementById("startButtonPrivate")
-                .addEventListener("click", function () {
-                    const url = `quizz.html?id=${sessionId}`; // Crée l'URL avec le paramètre id
+                .addEventListener("click", async function () {
+                    quizzId = await getQuizIdByName(quizz);
+                    console.log(quizzId + " : " + quizz);
+                    let isReady = false;
+                    Swal.fire({
+                        title: "Veuillez patienter",
+                        text: "Chargement en cours...",
+                        allowOutsideClick: false, // Empêche la fermeture en cliquant en dehors de l'alerte
+                        didOpen: () => {
+                            Swal.showLoading(); // Montre le loader de SweetAlert
+                        },
+                    });
+                    while (!isReady) {
+                        isReady = await getIsReady(sessionId);
+                        console.log("isReady:", isReady);
+                        if (!isReady) {
+                            console.log("Waiting for isReady to be true");
+                            await new Promise((resolve) =>
+                                setTimeout(resolve, 1000)
+                            );
+                        }
+                    }
+                    const url = `quiz.html?session=${sessionId}&quizz=${quizzId}`; // Crée l'URL avec le paramètre id
                     window.location.href = url;
+                    console.log("redirection to quizz" + sessionId);
                 });
+            document
+                .getElementById("startButton")
+                .addEventListener("click", async function () {
+                    quizzId = await getQuizIdByName(quizz);
+                    console.log(quizzId + " : " + quizz);
+                    let isReady = false;
+                    Swal.fire({
+                        title: "Veuillez patienter",
+                        text: "Chargement en cours...",
+                        allowOutsideClick: false, // Empêche la fermeture en cliquant en dehors de l'alerte
+                        didOpen: () => {
+                            Swal.showLoading(); // Montre le loader de SweetAlert
+                        },
+                    });
+                    while (!isReady) {
+                        isReady = await getIsReady(sessionId);
+                        console.log("isReady:", isReady);
+                        if (!isReady) {
+                            console.log("Waiting for isReady to be true");
+                            await new Promise((resolve) =>
+                                setTimeout(resolve, 1000)
+                            );
+                        }
+                    }
+                    const url = `quiz.html?session=${sessionId}&quizz=${quizzId}`;
+                    // Crée l'URL avec le paramètre id
+                    window.location.href = url;
+                    console.log("redirection to quizz:" + sessionId + "id");
+                });
+
             // Choix du matchmaking standard
             function selectMatchmaking() {
                 document.querySelector(".button-container").style.display =
@@ -176,11 +299,22 @@
                 const params = new URLSearchParams(window.location.search);
 
                 // Récupère le paramètre "theme"
-                const theme = params.get("quizz");
-                findOrCreateSession(theme);
+                quizz = params.get("quizz");
+                findOrCreateSession(quizz);
             }
 
             window.selectMatchmaking = selectMatchmaking;
+
+            document
+                .getElementById("button-create-private")
+                .addEventListener("click", function () {
+                    // Crée un objet URLSearchParams avec les paramètres de l'URL actuelle
+                    const params = new URLSearchParams(window.location.search);
+
+                    // Récupère le paramètre "theme"
+                    quizz = params.get("quizz");
+                    createPrivateSession(quizz);
+                });
 
             // Créer une partie privée
             async function createPrivateSession(quizz) {
@@ -188,16 +322,19 @@
                     "none";
                 document.querySelector(".private-container").style.display =
                     "block";
+                let newSessionDoc;
+                if (userUID) {
+                    newSessionDoc = await addDoc(collection(db, "session"), {
+                        date_creation: Date.now(),
+                        gagnant: "",
+                        quizz: quizz,
+                        score: [0, 0],
+                        users: [userUID, "privé"], // users est maintenant un tableau
+                        isReady: false,
+                    });
+                    sessionId = newSessionDoc.id;
+                }
 
-                const newSessionDoc = await addDoc(collection(db, "session"), {
-                    date_creation: Date.now(),
-                    gagnant: "",
-                    quizz: quizz,
-                    score: [0, 0],
-                    users: [userUID, "privé"], // users est maintenant un tableau
-                });
-
-                sessionId = newSessionDoc.id;
                 document.getElementById(
                     "sessionCode"
                 ).innerText = `Code de session: ${sessionId}`;
@@ -207,7 +344,20 @@
 
             // Rejoindre une partie privée via code
             async function joinPrivateSession() {
+                // Crée un objet URLSearchParams avec les paramètres de l'URL actuelle
+                const params = new URLSearchParams(window.location.search);
+
+                // Récupère le paramètre "theme"
+                quizz = params.get("quizz");
                 const code = document.getElementById("codeInput").value;
+
+                if (code === "") {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Veuillez entrer un code de session !",
+                    });
+                    return;
+                }
                 const sessionRef = doc(db, "session", code);
                 const sessionSnap = await getDoc(sessionRef);
 
@@ -219,7 +369,8 @@
 
                     // Mise à jour de l'utilisateur 1 dans la session
                     const sessionDoc = sessionSnap;
-                    const sessionId = code;
+
+                    sessionId = code;
                     const sessionData = sessionDoc.data();
                     const users = sessionData.users;
 
@@ -233,6 +384,7 @@
                     //await updateDoc(sessionRef, { "users.1": userUID }); // Modification de l'utilisateur 1
                     //sessionId = code;
 
+                    //guest trouvé modif du css
                     document.querySelector(".button-container").style.display =
                         "none";
                     document.querySelector(".private-container").style.display =
@@ -240,6 +392,7 @@
                     document.getElementById(
                         "sessionCode"
                     ).innerText = `Code de session: ${sessionId}`;
+                    //on fait disparaitre le loader
                     document
                         .getElementById("guestProfilePrivate")
                         .classList.remove("loader");
@@ -279,6 +432,7 @@
                     // Si une session est trouvée, on récupère l'utilisateur 0 et on ajoute l'utilisateur 1
                     const sessionDoc = foundSession;
                     sessionId = sessionDoc.id;
+                    console.log(sessionId + "foundsession");
                     const sessionData = sessionDoc.data();
                     const users = sessionData.users;
 
@@ -293,7 +447,6 @@
                     // Suivre les changements pour afficher le profil de l'autre utilisateur
                     watchSessionChanges(sessionDoc.ref);
                 } else {
-                    console.log("creation");
                     // Créer une nouvelle session si aucune n'est trouvée
                     const newSessionDoc = await addDoc(sessionRef, {
                         date_creation: Date.now(),
@@ -302,8 +455,8 @@
                         score: [0, 0],
                         users: [userUID, null], // Crée une session avec un utilisateur à l'index 0 et un libre à l'index 1
                     });
-                    const sessionId = newSessionDoc.id;
-                    console.log(sessionId);
+                    sessionId = newSessionDoc.id;
+                    console.log(sessionId + "creation");
                     // Suivre les changements pour détecter l'arrivée d'un autre utilisateur
                     watchSessionChanges(newSessionDoc);
                 }
@@ -326,6 +479,7 @@
                         sessionData.users[1] &&
                         sessionData.users[1] !== "privé"
                     ) {
+                        //on fait disparaitre le loader
                         document
                             .getElementById(guestProfile)
                             .classList.remove("loader");
@@ -359,4 +513,5 @@
             auth.signInAnonymously();
         </script>
     </body>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </html>

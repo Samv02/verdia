@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Récapitulatif du Quizz</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="register/accueil.css">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-6">
+
+    <header class="header">
+        <div class="gauche">
+          <li class="header__list">
+            <a class="header__link" href="#"><img class="logonav" src="register/imageSite/LOGOECO.png"></a>
+          </li>
+        </div>
+        <div class="centre">
+            <a href="accueil.html">ACCUEIL</a>
+            <a href="quiz.html">QUIZZ</a>
+            <a href="news.html">NEWS</a>
+          </a>
+        </div>
+        <div class="droite">
+          <ul class="header__nav">
+            <li class="header__list">
+              <a class="header__link" href="login.php">
+                <img class="iconBlack" src="register/imageSite/icones/friend.png">
+                <img class="iconWhite" src="register/imageSite/icones/friend.png">
+              </a>
+            </li>
+    
+            <li class="header__list">
+                <a class="header__link" href="login.php">
+                  <img class="iconBlack" src="register/imageSite/icones/cht.png">
+                  <img class="iconWhite" src="register/imageSite/icones/cht.png">
+                </a>
+              </li>
+          
+              <li class="header__list">
+                <a class="header__link" href="login.php">
+                  <img class="iconBlack" src="register/imageSite/icones/profilfriends.png">
+                  <img class="iconWhite" src="register/imageSite/icones/profilfriends.png">
+                </a>
+              </li>
+            
+          </ul>
+        </div>
+        
+      </header>
+    
+    <!-- Conteneur principal pour le récapitulatif -->
+    <div class="affichageRecap w-full bg-white shadow-lg rounded-lg p-8 space-y-6 flex flex-row">
+        <!-- Titre principal centré -->
+        <div id="zoneQuestion" class="basis-3/4 text-center ">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Récapitulatif du Quizz</h1>
+            <h2 id="nomTheme" class="text-xl font-semibold text-blue-500 mb-6"></h2>
+            
+            <!-- Liste des questions et réponses -->
+            <div id="questionEtReponse" class="space-y-4">
+                <!-- Contenu des questions et réponses généré par JavaScript -->
+            </div>
+        </div>
+
+        <!-- Résultats -->
+        <div class="basis-1/4 flex flex-col">
+            <div id="resultat" class="text-center">
+                <div id="nomGagnant" class="text-2xl font-bold text-green-500 mb-2"></div>
+                <div id="score" class="text-xl text-gray-700"></div>
+            </div>
+    
+            <!-- Lien de retour à l'accueil -->
+            <div class="text-center mt-6">
+                <a href="acceuil.html" class="retourAccueil text-blue-500 font-semibold hover:underline">
+                    Retour à l'accueil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script principal pour le récapitulatif -->
+    <script type="module" src="recap.js"></script>
+</body>
+</html>
